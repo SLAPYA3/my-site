@@ -77,7 +77,7 @@
 </div>
 
 <script>
-    // ПОЛНОСТЬЮ ИСПРАВЛЕННАЯ КОНФИГУРАЦИЯ
+    // ФИНАЛЬНЫЙ КОНФИГ С ТВОИМ ЕВРОПЕЙСКИМ СЕРВЕРОМ
     const firebaseConfig = {
         apiKey: "AIzaSyBCUf9EeU4Imh8kzHto2rNor-P_bgjpeWU",
         authDomain: "://firebaseapp.com",
@@ -105,7 +105,7 @@
 
     function saveName() {
         let n = document.getElementById('inName').value.trim();
-        if(n) { myName = n; localStorage.setItem('tvName', n); document.getElementById('userName').innerText = n; document.getElementById('inName').value = ''; }
+        if(n) { myName = n; localStorage.setItem('tvName', n); document.getElementById('userName').innerText = n; }
     }
 
     function changeAvatar() {
@@ -161,4 +161,5 @@
 </script>
 </body>
 </html>
+
 
