@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SLAPYA_TV | LIVE</title>
-    <!-- Firebase SDK -->
+    <title>SLAPYA_TV</title>
+    <!-- Firebase SDK (Версия 8 - самая стабильная для нас) -->
     <script src="https://gstatic.com"></script>
     <script src="https://gstatic.com"></script>
     <style>
         :root { --main: #ff004d; --bg: #000; --card: #1a1a1a; --text: #fff; }
         body { font-family: 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-top: 60px; }
         header { background: #111; height: 50px; position: fixed; top: 0; width: 100%; z-index: 1000; border-bottom: 2px solid var(--main); display: flex; justify-content: center; align-items: center; }
-        .logo { font-size: 22px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; }
+        .logo { font-size: 22px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; }
         .logo span { color: var(--main); }
         .container { width: 900px; margin: 0 auto; display: flex; gap: 20px; }
         @media (max-width: 920px) { .container { width: 95%; flex-direction: column; } nav { width: 100% !important; } main { width: 100% !important; } }
@@ -23,7 +23,7 @@
         .card { background: var(--card); border-radius: 12px; padding: 20px; margin-bottom: 20px; border: 1px solid #333; }
         #userAva { width: 150px; height: 150px; object-fit: cover; border-radius: 12px; background: #333; border: 2px solid #444; }
         .file-label { background: #333; color: #fff; padding: 10px 15px; display: inline-block; border-radius: 6px; cursor: pointer; margin-top: 10px; font-size: 12px; border: 1px solid #444; font-weight: bold; }
-        #chatWindow { height: 450px; overflow-y: auto; background: #080808; border-radius: 8px; padding: 15px; display: flex; flex-direction: column; gap: 12px; border: 1px solid #222; }
+        #chatWindow { height: 400px; overflow-y: auto; background: #080808; border-radius: 8px; padding: 15px; display: flex; flex-direction: column; gap: 12px; border: 1px solid #222; }
         .msg { padding: 10px 14px; border-radius: 14px; max-width: 75%; font-size: 14px; color: #fff; line-height: 1.4; }
         .msg b { display: block; font-size: 11px; margin-bottom: 4px; opacity: 0.7; }
         .msg.other { align-self: flex-start; background: #333; border-bottom-left-radius: 2px; }
@@ -52,26 +52,19 @@
             </div>
             <div style="flex:1; min-width: 250px;">
                 <h2 id="userName" style="margin:0">SLAPYA USER</h2>
-                <input type="text" id="inName" placeholder="Новое имя" style="margin-top:15px">
+                <input type="text" id="inName" placeholder="Твое имя" style="margin-top:15px">
                 <button class="btn" onclick="saveName()">СОХРАНИТЬ</button>
             </div>
-        </div>
-        <div class="card">
-            <textarea id="postTxt" rows="2" placeholder="Что в эфире?"></textarea>
-            <label class="file-label" for="postIn">📎 ДОБАВИТЬ ФОТО</label>
-            <input type="file" id="postIn" accept="image/*" onchange="previewPost()">
-            <img id="pPreview" style="display:none; max-width:100%; margin-top:15px; border-radius:8px;">
-            <button class="btn" style="margin-top:15px" onclick="addPost()">ОПУБЛИКОВАТЬ ПОСТ</button>
         </div>
         <div id="wall"></div>
     </main>
 
     <main id="tab_chat">
         <div class="card">
-            <div id="status-line">СВЯЗЬ: <span id="db_stat" style="color:yellow">ПОИСК...</span></div>
+            <div id="status-line">СИГНАЛ: <span id="db_stat" style="color:yellow">ПОИСК...</span></div>
             <div id="chatWindow"></div>
             <div style="display:flex; gap:10px; margin-top:15px">
-                <input type="text" id="chatInput" placeholder="Пиши всем..." onkeypress="if(event.keyCode==13) sendMsg()">
+                <input type="text" id="chatInput" placeholder="Напиши что-нибудь..." onkeypress="if(event.keyCode==13) sendMsg()">
                 <button class="btn" style="width:auto" onclick="sendMsg()">📡</button>
             </div>
         </div>
@@ -79,24 +72,25 @@
 </div>
 
 <script>
+    // ИСПРАВЛЕННЫЙ КОНФИГ
     const firebaseConfig = {
         apiKey: "AIzaSyBCUf9EeU4Imh8kzHto2rNor-P_bgjpeWU",
         authDomain: "://firebaseapp.com",
-        databaseURL: "https://slapya-tv-default-rtdb.firebaseio.com",
+        databaseURL: "https://slapya-tv-default-rtdb.firebaseio.com/",
         projectId: "slapya-tv"
     };
 
     if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
     const database = firebase.database();
 
-    // Проверка коннекта
+    // Проверка связи
     database.ref(".info/connected").on("value", (snap) => {
         const s = document.getElementById("db_stat");
         if (snap.val() === true) { s.innerText = "ЕСТЬ! ✅"; s.style.color = "lime"; }
         else { s.innerText = "НЕТ ❌"; s.style.color = "red"; }
     });
 
-    let myName = localStorage.getItem('tvName') || 'SLAPYA_USER';
+    let myName = localStorage.getItem('tvName') || 'User';
     document.getElementById('userName').innerText = myName;
     if(localStorage.getItem('tvAva')) document.getElementById('userAva').src = localStorage.getItem('tvAva');
 
@@ -135,27 +129,7 @@
         win.appendChild(div);
         win.scrollTop = win.scrollHeight;
     });
-
-    function previewPost() {
-        const file = document.getElementById('postIn').files[0];
-        const reader = new FileReader();
-        reader.onloadend = () => { let p = document.getElementById('pPreview'); p.src = reader.result; p.style.display = 'block'; }
-        if(file) reader.readAsDataURL(file);
-    }
-
-    function addPost() {
-        let t = document.getElementById('postTxt').value;
-        let p = document.getElementById('pPreview');
-        if(!t && p.style.display === 'none') return;
-        let wall = document.getElementById('wall');
-        let post = document.createElement('div');
-        post.className = 'card';
-        let img = p.style.display === 'block' ? `<img src="${p.src}" style="max-width:100%; border-radius:8px; margin-top:15px;">` : '';
-        post.innerHTML = `<b style="color:var(--main)">${myName}</b><p>${t}</p>${img}`;
-        wall.prepend(post);
-        document.getElementById('postTxt').value = '';
-        p.style.display = 'none';
-    }
 </script>
 </body>
 </html>
+
