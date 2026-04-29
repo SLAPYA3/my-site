@@ -2,41 +2,37 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SLAPYA_TV</title>
+    <title>SLAPYA_TV | LIVE</title>
+    <!-- Самый надежный способ подключения библиотек -->
+    <script src="https://gstatic.com"></script>
+    <script src="https://gstatic.com"></script>
     <style>
-        :root { --main: #ff004d; --bg: #000; --card: #1a1a1a; --text: #fff; }
-        body { font-family: sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-top: 60px; }
-        header { background: #111; height: 50px; position: fixed; top: 0; width: 100%; border-bottom: 2px solid var(--main); display: flex; justify-content: center; align-items: center; }
-        .logo { font-size: 22px; font-weight: bold; text-transform: uppercase; }
-        .logo span { color: var(--main); }
-        .container { width: 95%; max-width: 600px; margin: 0 auto; }
-        .card { background: var(--card); border-radius: 12px; padding: 20px; border: 1px solid #333; margin-top: 20px; }
-        #chatWindow { height: 350px; overflow-y: auto; background: #080808; border-radius: 8px; padding: 15px; display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
-        .msg { padding: 10px; border-radius: 10px; background: #333; font-size: 14px; max-width: 80%; }
-        .msg.my { align-self: flex-end; background: var(--main); }
-        input { width: 100%; background: #222; border: 1px solid #444; color: #fff; padding: 12px; border-radius: 8px; box-sizing: border-box; outline: none; }
-        .btn { background: var(--main); color: #fff; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; }
+        body { background: #000; color: #fff; font-family: sans-serif; text-align: center; margin: 0; padding-top: 50px; }
+        .card { background: #111; border: 2px solid #ff004d; border-radius: 15px; width: 90%; max-width: 500px; margin: 0 auto; padding: 20px; box-shadow: 0 0 20px rgba(255, 0, 77, 0.3); }
+        #status { font-size: 14px; margin-bottom: 15px; font-weight: bold; }
+        #chatWindow { height: 300px; overflow-y: auto; background: #050505; border-radius: 10px; padding: 10px; margin-bottom: 15px; text-align: left; border: 1px solid #222; }
+        .msg { background: #ff004d; padding: 8px 12px; border-radius: 10px; margin-bottom: 8px; display: inline-block; clear: both; float: right; font-size: 14px; }
+        input { width: 100%; padding: 12px; border-radius: 8px; border: none; background: #222; color: #fff; box-sizing: border-box; outline: none; border: 1px solid #333; }
+        button { width: 100%; padding: 12px; background: #ff004d; color: #fff; border: none; border-radius: 8px; margin-top: 10px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+        button:active { transform: scale(0.98); }
     </style>
 </head>
 <body>
 
-<header><div class="logo">SLAPYA<span>_TV</span></div></header>
-
-<div class="container">
     <div class="card">
-        <div id="stat" style="text-align:center; font-size:12px; color:yellow; margin-bottom:10px;">ПОДКЛЮЧЕНИЕ...</div>
-        <div id="chatWindow"></div>
-        <input type="text" id="chatInput" placeholder="Напиши что-нибудь...">
-        <button class="btn" id="sendBtn">ОТПРАВИТЬ 📡</button>
+        <div style="font-size: 24px; font-weight: bold; margin-bottom: 10px;">SLAPYA<span>_TV</span></div>
+        <div id="status" style="color: #ffcc00;">СИГНАЛ: ПОИСК...</div>
+        
+        <div id="chatWindow">
+            <div style="color: #444; font-size: 12px; text-align: center;">Добро пожаловать в эфир</div>
+        </div>
+        
+        <input type="text" id="chatInput" placeholder="Введите сообщение...">
+        <button onclick="sendMsg()">ОТПРАВИТЬ В ЭФИР</button>
     </div>
-</div>
 
-<script type="module">
-    // Импортируем Firebase по-новому
-    import { initializeApp } from "https://gstatic.com";
-    import { getDatabase, ref, push, onChildAdded, onValue } from "https://gstatic.com";
-
+<script>
+    // ТВОИ ДАННЫЕ (ПРОВЕРЕНЫ)
     const firebaseConfig = {
         apiKey: "AIzaSyBCUf9EeU4Imh8kzHto2rNor-P_bgjpeWU",
         authDomain: "://firebaseapp.com",
@@ -44,46 +40,57 @@
         projectId: "slapya-tv"
     };
 
-    // Инициализация
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-    const chatRef = ref(db, 'chat');
+    // Запуск Firebase
+    try {
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
 
-    // Проверка связи
-    const connectedRef = ref(db, ".info/connected");
-    onValue(connectedRef, (snap) => {
-        const stat = document.getElementById("stat");
-        if (snap.val() === true) {
-            stat.innerText = "СВЯЗЬ: ЕСТЬ! ✅";
-            stat.style.color = "lime";
-        } else {
-            stat.innerText = "СВЯЗЬ: НЕТ ❌ (Обнови страницу)";
-            stat.style.color = "red";
-        }
-    });
-
-    // Отправка
-    document.getElementById("sendBtn").onclick = () => {
-        const input = document.getElementById("chatInput");
-        if (!input.value.trim()) return;
-        push(chatRef, {
-            message: input.value,
-            time: Date.now()
+        // Проверка соединения с базой
+        database.ref(".info/connected").on("value", function(snap) {
+            const stat = document.getElementById("status");
+            if (snap.val() === true) {
+                stat.innerText = "СИГНАЛ: ЕСТЬ! ✅";
+                stat.style.color = "#00ff00";
+            } else {
+                stat.innerText = "СИГНАЛ: ПОТЕРЯН ❌";
+                stat.style.color = "#ff0000";
+            }
         });
-        input.value = "";
-    };
 
-    // Получение
-    onChildAdded(chatRef, (data) => {
-        const msg = data.val();
-        const win = document.getElementById("chatWindow");
-        const div = document.createElement("div");
-        div.className = "msg my"; // Для теста все сообщения справа
-        div.innerText = msg.message;
-        win.appendChild(div);
-        win.scrollTop = win.scrollHeight;
-    });
+        // Функция отправки
+        function sendMsg() {
+            const input = document.getElementById('chatInput');
+            const text = input.value.trim();
+            if (!text) return;
+
+            database.ref('global_chat').push({
+                message: text,
+                timestamp: Date.now()
+            }).then(function() {
+                input.value = "";
+            }).catch(function(error) {
+                alert("ОШИБКА БАЗЫ: " + error.message);
+            });
+        }
+
+        // Получение сообщений
+        database.ref('global_chat').limitToLast(20).on('child_added', function(snapshot) {
+            const data = snapshot.val();
+            const win = document.getElementById('chatWindow');
+            const div = document.createElement('div');
+            div.className = 'msg';
+            div.innerText = data.message;
+            win.appendChild(div);
+            // Листаем вниз автоматически
+            win.scrollTop = win.scrollHeight;
+        });
+
+    } catch (e) {
+        document.getElementById("status").innerText = "ОШИБКА ЗАПУСКА!";
+        console.error(e);
+    }
 </script>
 
 </body>
 </html>
+
