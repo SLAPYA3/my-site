@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SLAPYA_TV</title>
+    <!-- Firebase SDK -->
     <script src="https://gstatic.com"></script>
     <script src="https://gstatic.com"></script>
     <style>
@@ -37,8 +38,10 @@
 
 <div class="container">
     <nav>
-        <li id="l_profile" class="active" onclick="showTab('profile')">📺 МОЙ КАНАЛ</li>
-        <li id="l_chat" onclick="showTab('chat')">💬 ОБЩИЙ ЧАТ</li>
+        <ul>
+            <li id="l_profile" class="active" onclick="showTab('profile')">📺 МОЙ КАНАЛ</li>
+            <li id="l_chat" onclick="showTab('chat')">💬 ОБЩИЙ ЧАТ</li>
+        </ul>
     </nav>
 
     <main id="tab_profile" class="active">
@@ -77,7 +80,7 @@
 </div>
 
 <script>
-    // ФИНАЛЬНЫЙ КОНФИГ С ТВОИМ ЕВРОПЕЙСКИМ СЕРВЕРОМ
+    // КОНФИГУРАЦИЯ С ТВОИМ ЕВРОПЕЙСКИМ СЕРВЕРОМ
     const firebaseConfig = {
         apiKey: "AIzaSyBCUf9EeU4Imh8kzHto2rNor-P_bgjpeWU",
         authDomain: "://firebaseapp.com",
@@ -161,3 +164,5 @@
 </script>
 </body>
 </html>
+
+  
