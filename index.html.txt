@@ -2,117 +2,159 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ВСети - Моя Страница</title>
+    <title>ВКонтакте | Моя Страница</title>
     <style>
-        :root { --vk-blue: #0077ff; --vk-bg: #edeef0; --vk-text: #2a5885; }
-        body { font-family: -apple-system, system-ui, Helvetica, sans-serif; background: var(--vk-bg); margin: 0; }
-        header { background: #fff; padding: 10px; border-bottom: 1px solid #ddd; text-align: center; color: var(--vk-blue); font-weight: bold; position: sticky; top: 0; z-index: 100; }
+        body { font-family: tahoma, arial, verdana, sans-serif, lucida sans; background: #edeef0; margin: 0; padding-top: 42px; color: #000; }
         
-        .container { display: flex; justify-content: center; padding: 20px; gap: 20px; max-width: 1000px; margin: 0 auto; }
-        
-        /* Боковое меню */
-        nav { width: 160px; position: sticky; top: 70px; height: fit-content; }
-        nav div { padding: 10px; cursor: pointer; color: var(--vk-text); border-radius: 6px; font-size: 14px; }
-        nav div:hover { background: #e1e3e6; }
-        nav div.active { font-weight: bold; }
+        /* Верхняя панель */
+        header { background: #4a76a8; height: 42px; position: fixed; top: 0; width: 100%; z-index: 1000; display: flex; justify-content: center; }
+        .header-wrap { width: 960px; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; }
+        .logo { color: #fff; font-weight: bold; font-size: 19px; text-decoration: none; display: flex; align-items: center; }
+        .search { background: #224b7a; border: none; border-radius: 12px; padding: 5px 15px; width: 180px; color: #fff; font-size: 12px; outline: none; }
 
-        main { width: 550px; }
-        .card { background: #fff; padding: 20px; border-radius: 12px; border: 1px solid #e1e3e6; margin-bottom: 15px; }
+        .container { width: 960px; margin: 0 auto; display: flex; padding: 15px 0; gap: 20px; }
+        
+        /* Левая колонка */
+        nav { width: 140px; }
+        nav ul { list-style: none; padding: 0; margin: 0; }
+        nav li { padding: 4px 10px; font-size: 12.5px; color: #2a5885; cursor: pointer; }
+        nav li:hover { background: #dae1e8; border-radius: 4px; }
+        nav li .count { float: right; color: #939393; }
+
+        /* Центр и профиль */
+        main { width: 770px; display: flex; gap: 20px; }
+        .col-left { width: 200px; }
+        .col-right { width: 550px; }
+        
+        .card { background: #fff; border-radius: 2px; border-bottom: 1px solid #d7d8db; margin-bottom: 15px; padding: 15px; box-shadow: 0 1px 0 0 #d7d8db; }
 
         /* Профиль */
-        .profile-header { display: flex; gap: 20px; }
-        .profile-avatar { width: 120px; height: 120px; background: #eee; border-radius: 8px; flex-shrink: 0; border: 1px solid #ddd; }
-        .profile-info h2 { margin: 0 0 10px 0; color: #000; }
-        .info-row { font-size: 13px; margin-bottom: 5px; color: #555; }
-        .info-row span { color: var(--vk-text); }
+        .avatar-box img { width: 200px; border-radius: 2px; }
+        .btn-gray { background: #e5ebf1; color: #55677d; text-align: center; padding: 7px; margin-top: 10px; font-size: 12px; cursor: pointer; font-weight: bold; }
+        
+        .profile-info h2 { margin: 0; font-size: 19px; font-weight: normal; padding-bottom: 10px; border-bottom: 1px solid #dae1e8; }
+        .status { color: #656565; font-size: 12px; margin: 8px 0; }
+        .info-row { display: flex; font-size: 12.5px; margin-bottom: 6px; }
+        .label { width: 160px; color: #828282; }
+        .value { color: #2a5885; }
 
-        /* Посты */
-        .post-header { display: flex; align-items: center; gap: 10px; font-weight: bold; color: var(--vk-text); margin-bottom: 10px; }
-        .mini-avatar { width: 35px; height: 35px; background: #4a76a8; border-radius: 50%; }
-        .post-content { font-size: 14px; margin-bottom: 10px; }
-        .post-footer { color: #818c99; font-size: 13px; cursor: pointer; }
+        /* Статистика */
+        .stats { display: flex; border-top: 1px solid #dae1e8; margin-top: 15px; padding-top: 15px; text-align: center; }
+        .stat-item { flex: 1; text-decoration: none; color: #2a5885; }
+        .stat-num { font-size: 19px; }
+        .stat-label { font-size: 11px; color: #828282; }
 
-        #profile-page, #messenger-page { display: none; }
+        /* Стена */
+        .post-input textarea { width: 100%; border: 1px solid #dae1e8; padding: 8px; box-sizing: border-box; resize: none; outline: none; }
+        .post-btn { background: #5181b8; color: #fff; border: none; padding: 6px 16px; border-radius: 4px; font-size: 12px; float: right; margin-top: 10px; cursor: pointer; }
+        
+        .wall-post { border-top: 1px solid #dae1e8; padding: 15px 0; display: flex; gap: 12px; }
+        .mini-ava { width: 50px; height: 50px; background: #eee; border-radius: 50%; }
+        .post-author { color: #2a5885; font-weight: bold; font-size: 12.5px; margin-bottom: 4px; }
+        .post-txt { font-size: 13px; line-height: 1.5; }
     </style>
 </head>
 <body>
 
-<header>ВСети</header>
+<header>
+    <div class="header-wrap">
+        <a href="#" class="logo">вконтакте</a>
+        <input type="text" class="search" placeholder="Поиск">
+        <div style="color:#fff; font-size:12px;">Выйти</div>
+    </div>
+</header>
 
 <div class="container">
     <nav>
-        <div id="m_profile" onclick="showPage('profile')">Моя страница</div>
-        <div id="m_news" class="active" onclick="showPage('news')">Новости</div>
-        <div id="m_msg" onclick="showPage('messenger')">Мессенджер</div>
+        <ul>
+            <li style="font-weight:bold; background:#dae1e8; border-radius:4px;">Моя Страница</li>
+            <li>Новости <span class="count">2</span></li>
+            <li>Сообщения</li>
+            <li>Друзья</li>
+            <li>Сообщества</li>
+            <li>Фотографии</li>
+            <li>Музыка</li>
+            <li>Видео</li>
+            <li>Игры</li>
+        </ul>
     </nav>
 
-    <!-- ЛЕНТА НОВОСТЕЙ -->
-    <main id="news-page">
-        <div class="card">
-            <textarea id="postText" placeholder="Что нового?" style="width:100%; border:1px solid #ddd; padding:10px; border-radius:8px;"></textarea>
-            <button onclick="addPost()" style="margin-top:10px; background:var(--vk-blue); color:#fff; border:none; padding:7px 15px; border-radius:5px; cursor:pointer; float:right;">Опубликовать</button>
-            <div style="clear:both;"></div>
-        </div>
-        <div id="feed"></div>
-    </main>
-
-    <!-- СТРАНИЦА ПРОФИЛЯ -->
-    <main id="profile-page">
-        <div class="card profile-header">
-            <div class="profile-avatar"><img src="https://placeholder.com" style="width:100%; border-radius:8px;"></div>
-            <div class="profile-info">
-                <h2>Разработчик Сайта</h2>
-                <div class="info-row">День рождения: <span>30 апреля</span></div>
-                <div class="info-row">Город: <span>GitHub City</span></div>
-                <div class="info-row">Статус: <span>Создаю свою соцсеть! 😎</span></div>
+    <main>
+        <div class="col-left">
+            <div class="card avatar-box" style="padding:0">
+                <img src="https://pinimg.com" alt="Дуров">
+                <div style="padding:15px">
+                    <div class="btn-gray">Редактировать</div>
+                </div>
+            </div>
+            
+            <div class="card" style="padding:10px">
+                <div style="font-size:12px; color:#2a5885; margin-bottom:10px;">Друзья <span style="color:#939393">145</span></div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:5px; text-align:center; font-size:11px;">
+                    <div><div style="width:50px; height:50px; background:#f0f2f5; margin:0 auto; border-radius:50%"></div>Маша</div>
+                    <div><div style="width:50px; height:50px; background:#f0f2f5; margin:0 auto; border-radius:50%"></div>Саня</div>
+                    <div><div style="width:50px; height:50px; background:#f0f2f5; margin:0 auto; border-radius:50%"></div>Кирилл</div>
+                </div>
             </div>
         </div>
-        <div class="card">
-            <strong>О себе:</strong><br>
-            <p style="font-size:13px; color:#333;">Я учусь кодить и это мой первый проект на GitHub.</p>
-        </div>
-    </main>
 
-    <!-- МЕССЕНДЖЕР -->
-    <main id="messenger-page">
-        <div class="card">
-            <h3>Мессенджер</h3>
-            <p style="color:#888;">Здесь будут твои диалоги...</p>
+        <div class="col-right">
+            <div class="card">
+                <h2>Павел Дуров <span style="color:#939393; font-size:12px; float:right;">online</span></h2>
+                <div class="status">Создаю будущее...</div>
+                
+                <div class="info-row"><div class="label">День рождения:</div><div class="value">10 октября 1984 г.</div></div>
+                <div class="info-row"><div class="label">Город:</div><div class="value">Санкт-Петербург</div></div>
+                <div class="info-row"><div class="label">Языки:</div><div class="value">Русский, English, Français</div></div>
+                
+                <div class="stats">
+                    <a class="stat-item"><div class="stat-num">145</div><div class="stat-label">друзей</div></a>
+                    <a class="stat-item"><div class="stat-num">2.4M</div><div class="stat-label">подписчиков</div></a>
+                    <a class="stat-item"><div class="stat-num">12</div><div class="stat-label">фотографий</div></a>
+                    <a class="stat-item"><div class="stat-num">8</div><div class="stat-label">отметок</div></a>
+                </div>
+            </div>
+
+            <div class="card post-input">
+                <textarea id="postText" rows="1" placeholder="Что у Вас нового?" onclick="this.rows=3"></textarea>
+                <div id="btnBlock" style="display:none">
+                    <button class="post-btn" onclick="addPost()">Отправить</button>
+                </div>
+            </div>
+            
+            <div id="wall">
+                <!-- Здесь будут посты -->
+            </div>
         </div>
     </main>
 </div>
 
 <script>
-    function showPage(page) {
-        // Скрываем все страницы
-        document.getElementById('news-page').style.display = 'none';
-        document.getElementById('profile-page').style.display = 'none';
-        document.getElementById('messenger-page').style.display = 'none';
-        
-        // Показываем нужную
-        document.getElementById(page + '-page').style.display = 'block';
-        
-        // Меняем активный пункт меню
-        document.querySelectorAll('nav div').forEach(el => el.classList.remove('active'));
-        if(page === 'profile') document.getElementById('m_profile').classList.add('active');
-        if(page === 'news') document.getElementById('m_news').classList.add('active');
-        if(page === 'messenger') document.getElementById('m_msg').classList.add('active');
-    }
+    // Раскрытие поля ввода
+    document.getElementById('postText').onclick = function() {
+        this.rows = 3;
+        document.getElementById('btnBlock').style.display = 'block';
+    };
 
     function addPost() {
         const text = document.getElementById('postText').value;
         if (!text) return;
-        const feed = document.getElementById('feed');
+        
+        const wall = document.getElementById('wall');
         const post = document.createElement('div');
-        post.className = 'card';
+        post.className = 'card wall-post';
         post.innerHTML = `
-            <div class="post-header"><div class="mini-avatar"></div>Разработчик</div>
-            <div class="post-content">${text}</div>
-            <div class="post-footer">❤ Лайк</div>
+            <div class="mini-ava"></div>
+            <div class="post-body">
+                <div class="post-author">Павел Дуров</div>
+                <div class="post-txt">${text}</div>
+                <div style="color:#939393; font-size:11px; margin-top:8px;">Только что</div>
+            </div>
         `;
-        feed.prepend(post);
+        wall.prepend(post);
         document.getElementById('postText').value = '';
+        document.getElementById('postText').rows = 1;
+        document.getElementById('btnBlock').style.display = 'none';
     }
 </script>
 
