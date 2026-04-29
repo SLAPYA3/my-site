@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SLAPYA_TV</title>
-    <!-- Firebase SDK -->
+    <!-- Firebase SDK (Стабильные версии) -->
     <script src="https://gstatic.com"></script>
     <script src="https://gstatic.com"></script>
     <style>
@@ -38,10 +38,8 @@
 
 <div class="container">
     <nav>
-        <ul>
-            <li id="l_profile" class="active" onclick="showTab('profile')">📺 МОЙ КАНАЛ</li>
-            <li id="l_chat" onclick="showTab('chat')">💬 ОБЩИЙ ЧАТ</li>
-        </ul>
+        <li id="l_profile" class="active" onclick="showTab('profile')">📺 МОЙ КАНАЛ</li>
+        <li id="l_chat" onclick="showTab('chat')">💬 ОБЩИЙ ЧАТ</li>
     </nav>
 
     <main id="tab_profile" class="active">
@@ -54,7 +52,7 @@
             <div style="flex:1; min-width: 250px;">
                 <h2 id="userName" style="margin:0">SLAPYA USER</h2>
                 <input type="text" id="inName" placeholder="Изменить имя профиля" style="margin-top:15px">
-                <button class="btn" onclick="saveName()">СОХРАНИТЬ</button>
+                <button class="btn" onclick="saveName()">СОХРАНИТЬ ИМЯ</button>
             </div>
         </div>
         <div class="card">
@@ -80,7 +78,7 @@
 </div>
 
 <script>
-    // КОНФИГУРАЦИЯ С ТВОИМ ЕВРОПЕЙСКИМ СЕРВЕРОМ
+    // ТВОЙ ИСПРАВЛЕННЫЙ КОНФИГ
     const firebaseConfig = {
         apiKey: "AIzaSyBCUf9EeU4Imh8kzHto2rNor-P_bgjpeWU",
         authDomain: "://firebaseapp.com",
@@ -88,11 +86,13 @@
         projectId: "slapya-tv",
         storageBucket: "slapya-tv.firebasestorage.app",
         messagingSenderId: "136766849091",
-        appId: "1:136766849091:web:deba1aa85e51a6e4894f6f",
-        measurementId: "G-WY7VQPQ3LY"
+        appId: "1:136766849091:web:deba1aa85e51a6e4894f6f"
     };
 
-    firebase.initializeApp(firebaseConfig);
+    // Инициализация (с проверкой)
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
     const database = firebase.database();
 
     let myName = localStorage.getItem('tvName') || 'SLAPYA_USER';
@@ -123,11 +123,23 @@
 
     function sendMsg() {
         let input = document.getElementById('chatInput');
-        if(!input.value.trim()) return;
-        database.ref('chat').push({ name: myName, message: input.value });
-        input.value = '';
+        let text = input.value.trim();
+        if(!text) return;
+        
+        // Отправляем в базу
+        database.ref('chat').push({
+            name: myName,
+            message: text,
+            time: Date.now()
+        }).then(() => {
+            input.value = ''; // Чистим поле только если ушло
+        }).catch((err) => {
+            console.error("Ошибка Firebase:", err);
+            alert("Ошибка! Проверь правила (Rules) в Firebase.");
+        });
     }
 
+    // Слушаем базу
     database.ref('chat').limitToLast(50).on('child_added', (data) => {
         let msg = data.val();
         let win = document.getElementById('chatWindow');
@@ -164,3 +176,4 @@
 </script>
 </body>
 </html>
+
