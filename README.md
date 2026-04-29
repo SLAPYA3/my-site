@@ -77,15 +77,16 @@
 </div>
 
 <script>
-    // ПРОВЕРЕННАЯ КОНФИГУРАЦИЯ С ТВОИМ НОВЫМ URL
+    // ПОЛНОСТЬЮ ИСПРАВЛЕННАЯ КОНФИГУРАЦИЯ
     const firebaseConfig = {
         apiKey: "AIzaSyBCUf9EeU4Imh8kzHto2rNor-P_bgjpeWU",
         authDomain: "://firebaseapp.com",
-        databaseURL: "https://firebaseio.com",
+        databaseURL: "https://firebasedatabase.app",
         projectId: "slapya-tv",
         storageBucket: "slapya-tv.firebasestorage.app",
         messagingSenderId: "136766849091",
-        appId: "1:136766849091:web:deba1aa85e51a6e4894f6f"
+        appId: "1:136766849091:web:deba1aa85e51a6e4894f6f",
+        measurementId: "G-WY7VQPQ3LY"
     };
 
     firebase.initializeApp(firebaseConfig);
@@ -104,7 +105,7 @@
 
     function saveName() {
         let n = document.getElementById('inName').value.trim();
-        if(n) { myName = n; localStorage.setItem('tvName', n); document.getElementById('userName').innerText = n; }
+        if(n) { myName = n; localStorage.setItem('tvName', n); document.getElementById('userName').innerText = n; document.getElementById('inName').value = ''; }
     }
 
     function changeAvatar() {
