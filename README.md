@@ -3,108 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SLAPYA_TV | Твоя соцсеть</title>
+    <title>SLAPYA_TV | Прямой Эфир</title>
     <style>
-        :root { --main-color: #ff004d; --vk-blue: #4a76a8; --vk-bg: #edeef0; --vk-text: #2a5885; }
-        body { font-family: tahoma, arial, sans-serif; background: var(--vk-bg); margin: 0; padding-top: 50px; }
-        
-        /* Шапка SLAPYA_TV */
-        header { background: #222; height: 48px; position: fixed; top: 0; width: 100%; z-index: 1000; display: flex; justify-content: center; box-shadow: 0 2px 10px rgba(0,0,0,0.3); border-bottom: 2px solid var(--main-color); }
+        :root { --main: #ff004d; --bg: #edeef0; --text: #2a5885; }
+        body { font-family: tahoma, arial, sans-serif; background: var(--bg); margin: 0; padding-top: 60px; }
+        header { background: #222; height: 50px; position: fixed; top: 0; width: 100%; z-index: 1000; display: flex; justify-content: center; border-bottom: 2px solid var(--main); }
         .h-wrap { width: 960px; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; color: white; }
-        .logo-text { font-size: 20px; font-weight: bold; letter-spacing: 1px; color: #fff; text-transform: uppercase; cursor: pointer; }
-        .logo-text span { color: var(--main-color); }
-
+        .logo { font-size: 22px; font-weight: bold; text-transform: uppercase; cursor: pointer; color: #fff; text-decoration:none; }
+        .logo span { color: var(--main); }
         .container { width: 960px; margin: 0 auto; display: flex; gap: 20px; }
-        
-        /* Меню */
         nav { width: 160px; }
-        nav ul { list-style: none; padding: 0; margin: 0; }
-        nav li { padding: 8px 12px; color: var(--vk-text); cursor: pointer; font-size: 13px; border-radius: 6px; transition: 0.2s; margin-bottom: 2px; }
+        nav li { list-style: none; padding: 10px; color: var(--text); cursor: pointer; font-size: 14px; border-radius: 6px; margin-bottom: 5px; }
         nav li:hover { background: #dae1e8; }
-        nav li.active { font-weight: bold; background: #dae1e8; color: #000; }
-
-        /* Контент */
-        main { width: 780px; display: none; gap: 20px; }
-        main.active { display: flex; }
-        .card { background: #fff; border-radius: 8px; border: 1px solid #d7d8db; margin-bottom: 15px; padding: 15px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-
-        /* Профиль */
-        #userAva { width: 200px; height: 200px; object-fit: cover; border-radius: 8px; background: #333; border: 1px solid #ddd; }
-        .name-h2 { margin: 0; font-size: 22px; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #222; }
-        .status-text { color: #656565; font-size: 13px; margin: 10px 0; font-style: italic; }
+        nav li.active { font-weight: bold; background: #dae1e8; border-left: 3px solid var(--main); }
+        main { width: 780px; display: none; }
+        main.active { display: block; }
+        .card { background: #fff; border-radius: 8px; border: 1px solid #d7d8db; margin-bottom: 15px; padding: 15px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
         
-        /* Кнопки и формы */
-        input, textarea { width: 100%; margin-bottom: 10px; padding: 10px; box-sizing: border-box; border: 1px solid #dae1e8; border-radius: 6px; background: #f9f9f9; }
-        .btn { background: var(--main-color); color: #fff; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: bold; transition: 0.3s; }
-        .btn:hover { background: #d60041; transform: translateY(-1px); }
-
-        .post-img { max-width: 100%; border-radius: 6px; margin-top: 12px; border: 1px solid #eee; }
-        .like-btn { color: #818c99; cursor: pointer; font-size: 13px; margin-top: 12px; display: inline-flex; align-items: center; gap: 5px; }
-        .like-btn:hover { color: var(--main-color); }
+        /* ЧАТ - ВОТ ТУТ ГЛАВНОЕ */
+        .chat-container { display: flex; flex-direction: column; height: 450px; }
+        #chatWindow { flex-grow: 1; overflow-y: auto; border: 1px solid #eee; padding: 15px; margin-bottom: 10px; background: #fdfdfd; border-radius: 6px; display: flex; flex-direction: column; gap: 10px; }
+        .msg { padding: 8px 12px; border-radius: 12px; max-width: 70%; font-size: 14px; line-height: 1.4; position: relative; }
+        .msg.bot { background: #f0f2f5; align-self: flex-start; border-bottom-left-radius: 2px; }
+        .msg.user { background: #ffe0e9; align-self: flex-end; border-bottom-right-radius: 2px; border: 1px solid #ffb3c6; }
+        .msg-author { font-weight: bold; font-size: 11px; margin-bottom: 3px; display: block; }
+        
+        .chat-input-area { display: flex; gap: 10px; }
+        #chatInput { flex-grow: 1; padding: 10px; border: 1px solid #dae1e8; border-radius: 6px; outline: none; }
+        .send-btn { background: var(--main); color: #fff; border: none; padding: 0 20px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        
+        /* Остальное */
+        .btn { background: var(--main); color: #fff; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-size: 12px; }
+        input, textarea { width: 100%; margin-bottom: 10px; padding: 10px; border: 1px solid #dae1e8; border-radius: 6px; box-sizing: border-box; }
     </style>
 </head>
 <body>
 
-<header>
-    <div class="h-wrap">
-        <div class="logo-text" onclick="location.reload()">SLAPYA<span>_TV</span></div>
-        <div style="font-size: 12px; background: rgba(255,255,255,0.1); padding: 5px 15px; border-radius: 20px; cursor: pointer;">Поиск каналов</div>
-    </div>
-</header>
+<header><div class="h-wrap"><a href="#" class="logo">SLAPYA<span>_TV</span></a><div style="color:var(--main); font-weight:bold;">LIVE</div></div></header>
 
 <div class="container">
     <nav>
-        <ul>
-            <li id="l_profile" class="active" onclick="showTab('profile')">📺 Мой Канал</li>
-            <li id="l_news" onclick="showTab('news')">🔥 Тренды</li>
-            <li id="l_msg" onclick="showTab('msg')">💬 Чаты</li>
-            <li id="l_chan" onclick="showTab('chan')">🎥 Все Эфиры</li>
-        </ul>
+        <li id="l_profile" class="active" onclick="showTab('profile')">📺 Мой Канал</li>
+        <li id="l_news" onclick="showTab('news')">🔥 Тренды</li>
+        <li id="l_msg" onclick="showTab('msg')">💬 Чаты</li>
     </nav>
 
-    <!-- МОЙ КАНАЛ -->
     <main id="tab_profile" class="active">
-        <div style="width: 200px;">
-            <div class="card" style="padding:0; overflow:hidden;">
-                <img id="userAva" src="https://placeholder.com">
-                <div style="padding:15px">
-                    <button class="btn" style="width:100%" onclick="toggleBox('editBox')">Настроить TV</button>
-                </div>
+        <div class="card" style="display:flex; gap:20px;">
+            <img id="userAva" src="https://placeholder.com" style="width:150px; height:150px; border-radius:8px; object-fit:cover;">
+            <div>
+                <h2 id="outName">SLAPYA USER</h2>
+                <div id="outStatus" style="font-style:italic; color:#666;">В эфире...</div>
+                <button class="btn" style="margin-top:15px;" onclick="toggleBox('editBox')">Настроить канал</button>
             </div>
         </div>
-        <div style="width: 560px;">
-            <div id="editBox" class="card" style="display:none; border: 2px solid var(--main-color);">
-                <b>Настройки вещания:</b><br><br>
-                <input type="text" id="inName" placeholder="Название канала">
-                <input type="text" id="inStatus" placeholder="О чем твой эфир?">
-                <input type="text" id="inAva" placeholder="Ссылка на логотип канала">
-                <button class="btn" onclick="saveProfile()">Обновить эфир</button>
-            </div>
-            
-            <div class="card">
-                <h2 id="outName" class="name-h2">SLAPYA USER</h2>
-                <div id="outStatus" class="status-text">В прямом эфире...</div>
-                <div style="font-size: 12px; color: #828282; margin-top: 10px;">Статус канала: <span style="color:var(--main-color)">● LIVE</span></div>
-            </div>
-
-            <div class="card">
-                <textarea id="pText" rows="1" placeholder="Что нового на канале?" onclick="this.rows=3"></textarea>
-                <input type="text" id="pImg" placeholder="Ссылка на картинку/кадр из видео">
-                <button class="btn" style="float:right" onclick="addPost()">Выпустить пост</button>
-                <div style="clear:both"></div>
-            </div>
-            <div id="wall"></div>
+        <div id="editBox" class="card" style="display:none;">
+            <input type="text" id="inName" placeholder="Название">
+            <input type="text" id="inStatus" placeholder="Статус">
+            <input type="text" id="inAva" placeholder="Ссылка на аву">
+            <button class="btn" onclick="saveProfile()">Сохранить</button>
         </div>
+        <div class="card">
+            <textarea id="pText" rows="2" placeholder="Что нового в эфире?"></textarea>
+            <button class="btn" style="float:right" onclick="addPost()">Пост</button>
+            <div style="clear:both"></div>
+        </div>
+        <div id="wall"></div>
     </main>
 
-    <!-- ТРЕНДЫ -->
-    <main id="tab_news"><div class="card" style="width:100%"><h3>🔥 Тренды SLAPYA_TV</h3>Тут будут самые хайповые новости.</div></main>
+    <main id="tab_news"><div class="card"><h3>🔥 Тренды</h3><p>Тут будут горячие эфиры.</p></div></main>
 
-    <!-- ЧАТЫ -->
-    <main id="tab_msg"><div class="card" style="width:100%"><h3>💬 Чаты</h3>Здесь можно общаться со зрителями.</div></main>
-
-    <!-- ВСЕ ЭФИРЫ -->
-    <main id="tab_chan"><div class="card" style="width:100%"><h3>🎥 Все Эфиры</h3>Список всех активных каналов сети.</div></main>
+    <!-- ЧАТ - РАБОЧИЙ -->
+    <main id="tab_msg">
+        <div class="card chat-container">
+            <h3 style="margin-top:0;">💬 Общий чат SLAPYA_TV</h3>
+            <div id="chatWindow">
+                <div class="msg bot"><span class="msg-author">Система</span>Добро пожаловать в прямой эфир! Напиши что-нибудь в чат.</div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="chatInput" placeholder="Ваше сообщение..." onkeypress="if(event.keyCode==13) sendMsg()">
+                <button class="send-btn" onclick="sendMsg()">ОТПРАВИТЬ</button>
+            </div>
+        </div>
+    </main>
 </div>
 
 <script>
@@ -130,35 +111,53 @@
         let n = document.getElementById('inName').value;
         let s = document.getElementById('inStatus').value;
         let a = document.getElementById('inAva').value;
-
         if(n) { localStorage.setItem('tv_name', n); document.getElementById('outName').innerText = n; }
         if(s) { localStorage.setItem('tv_status', s); document.getElementById('outStatus').innerText = s; }
         if(a) { localStorage.setItem('tv_ava', a); document.getElementById('userAva').src = a; }
-        
         toggleBox('editBox');
     }
 
     function addPost() {
         let t = document.getElementById('pText').value;
-        let i = document.getElementById('pImg').value;
-        if(!t && !i) return;
-
+        if(!t) return;
+        let wall = document.getElementById('wall');
         let post = document.createElement('div');
         post.className = 'card';
-        let imgHtml = i ? `<img src="${i}" class="post-img">` : '';
-        
-        post.innerHTML = `
-            <div style="color:var(--main-color); font-weight:bold; font-size:14px; margin-bottom:8px;">${document.getElementById('outName').innerText}</div>
-            <div style="font-size:14px; line-height:1.5;">${t}</div>
-            ${imgHtml}
-            <div class="like-btn" onclick="this.innerHTML='❤️ 1'">❤️ 0</div>
-        `;
-        
-        document.getElementById('wall').prepend(post);
+        post.innerHTML = `<b>${document.getElementById('outName').innerText}</b><p>${t}</p>`;
+        wall.prepend(post);
         document.getElementById('pText').value = '';
-        document.getElementById('pImg').value = '';
+    }
+
+    // ЛОГИКА ЧАТА
+    function sendMsg() {
+        let input = document.getElementById('chatInput');
+        let window = document.getElementById('chatWindow');
+        let text = input.value.trim();
+        
+        if(!text) return;
+
+        // Добавляем твое сообщение
+        let myMsg = document.createElement('div');
+        myMsg.className = 'msg user';
+        myMsg.innerHTML = `<span class="msg-author">Вы (Ведущий)</span>${text}`;
+        window.appendChild(myMsg);
+        
+        input.value = '';
+        window.scrollTop = window.scrollHeight;
+
+        // Имитация ответа через секунду
+        setTimeout(() => {
+            let botMsg = document.createElement('div');
+            botMsg.className = 'msg bot';
+            let answers = ["Четко сказано!", "Согласен!", "SLAPYA_TV — топ!", "Когда следующий эфир?", "Вау! 🔥"];
+            let randomText = answers[Math.floor(Math.random() * answers.length)];
+            botMsg.innerHTML = `<span class="msg-author">Зритель_${Math.floor(Math.random()*100)}</span>${randomText}`;
+            window.appendChild(botMsg);
+            window.scrollTop = window.scrollHeight;
+        }, 1000);
     }
 </script>
 </body>
 </html>
+
 
