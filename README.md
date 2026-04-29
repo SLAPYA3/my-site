@@ -2,162 +2,163 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>ВКонтакте | Моя Страница</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SLAPYA_TV | Твоя соцсеть</title>
     <style>
-        body { font-family: tahoma, arial, verdana, sans-serif, lucida sans; background: #edeef0; margin: 0; padding-top: 42px; color: #000; }
+        :root { --main-color: #ff004d; --vk-blue: #4a76a8; --vk-bg: #edeef0; --vk-text: #2a5885; }
+        body { font-family: tahoma, arial, sans-serif; background: var(--vk-bg); margin: 0; padding-top: 50px; }
         
-        /* Верхняя панель */
-        header { background: #4a76a8; height: 42px; position: fixed; top: 0; width: 100%; z-index: 1000; display: flex; justify-content: center; }
-        .header-wrap { width: 960px; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; }
-        .logo { color: #fff; font-weight: bold; font-size: 19px; text-decoration: none; display: flex; align-items: center; }
-        .search { background: #224b7a; border: none; border-radius: 12px; padding: 5px 15px; width: 180px; color: #fff; font-size: 12px; outline: none; }
+        /* Шапка SLAPYA_TV */
+        header { background: #222; height: 48px; position: fixed; top: 0; width: 100%; z-index: 1000; display: flex; justify-content: center; box-shadow: 0 2px 10px rgba(0,0,0,0.3); border-bottom: 2px solid var(--main-color); }
+        .h-wrap { width: 960px; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; color: white; }
+        .logo-text { font-size: 20px; font-weight: bold; letter-spacing: 1px; color: #fff; text-transform: uppercase; cursor: pointer; }
+        .logo-text span { color: var(--main-color); }
 
-        .container { width: 960px; margin: 0 auto; display: flex; padding: 15px 0; gap: 20px; }
+        .container { width: 960px; margin: 0 auto; display: flex; gap: 20px; }
         
-        /* Левая колонка */
-        nav { width: 140px; }
+        /* Меню */
+        nav { width: 160px; }
         nav ul { list-style: none; padding: 0; margin: 0; }
-        nav li { padding: 4px 10px; font-size: 12.5px; color: #2a5885; cursor: pointer; }
-        nav li:hover { background: #dae1e8; border-radius: 4px; }
-        nav li .count { float: right; color: #939393; }
+        nav li { padding: 8px 12px; color: var(--vk-text); cursor: pointer; font-size: 13px; border-radius: 6px; transition: 0.2s; margin-bottom: 2px; }
+        nav li:hover { background: #dae1e8; }
+        nav li.active { font-weight: bold; background: #dae1e8; color: #000; }
 
-        /* Центр и профиль */
-        main { width: 770px; display: flex; gap: 20px; }
-        .col-left { width: 200px; }
-        .col-right { width: 550px; }
-        
-        .card { background: #fff; border-radius: 2px; border-bottom: 1px solid #d7d8db; margin-bottom: 15px; padding: 15px; box-shadow: 0 1px 0 0 #d7d8db; }
+        /* Контент */
+        main { width: 780px; display: none; gap: 20px; }
+        main.active { display: flex; }
+        .card { background: #fff; border-radius: 8px; border: 1px solid #d7d8db; margin-bottom: 15px; padding: 15px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
 
         /* Профиль */
-        .avatar-box img { width: 200px; border-radius: 2px; }
-        .btn-gray { background: #e5ebf1; color: #55677d; text-align: center; padding: 7px; margin-top: 10px; font-size: 12px; cursor: pointer; font-weight: bold; }
+        #userAva { width: 200px; height: 200px; object-fit: cover; border-radius: 8px; background: #333; border: 1px solid #ddd; }
+        .name-h2 { margin: 0; font-size: 22px; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #222; }
+        .status-text { color: #656565; font-size: 13px; margin: 10px 0; font-style: italic; }
         
-        .profile-info h2 { margin: 0; font-size: 19px; font-weight: normal; padding-bottom: 10px; border-bottom: 1px solid #dae1e8; }
-        .status { color: #656565; font-size: 12px; margin: 8px 0; }
-        .info-row { display: flex; font-size: 12.5px; margin-bottom: 6px; }
-        .label { width: 160px; color: #828282; }
-        .value { color: #2a5885; }
+        /* Кнопки и формы */
+        input, textarea { width: 100%; margin-bottom: 10px; padding: 10px; box-sizing: border-box; border: 1px solid #dae1e8; border-radius: 6px; background: #f9f9f9; }
+        .btn { background: var(--main-color); color: #fff; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: bold; transition: 0.3s; }
+        .btn:hover { background: #d60041; transform: translateY(-1px); }
 
-        /* Статистика */
-        .stats { display: flex; border-top: 1px solid #dae1e8; margin-top: 15px; padding-top: 15px; text-align: center; }
-        .stat-item { flex: 1; text-decoration: none; color: #2a5885; }
-        .stat-num { font-size: 19px; }
-        .stat-label { font-size: 11px; color: #828282; }
-
-        /* Стена */
-        .post-input textarea { width: 100%; border: 1px solid #dae1e8; padding: 8px; box-sizing: border-box; resize: none; outline: none; }
-        .post-btn { background: #5181b8; color: #fff; border: none; padding: 6px 16px; border-radius: 4px; font-size: 12px; float: right; margin-top: 10px; cursor: pointer; }
-        
-        .wall-post { border-top: 1px solid #dae1e8; padding: 15px 0; display: flex; gap: 12px; }
-        .mini-ava { width: 50px; height: 50px; background: #eee; border-radius: 50%; }
-        .post-author { color: #2a5885; font-weight: bold; font-size: 12.5px; margin-bottom: 4px; }
-        .post-txt { font-size: 13px; line-height: 1.5; }
+        .post-img { max-width: 100%; border-radius: 6px; margin-top: 12px; border: 1px solid #eee; }
+        .like-btn { color: #818c99; cursor: pointer; font-size: 13px; margin-top: 12px; display: inline-flex; align-items: center; gap: 5px; }
+        .like-btn:hover { color: var(--main-color); }
     </style>
 </head>
 <body>
 
 <header>
-    <div class="header-wrap">
-        <a href="#" class="logo">вконтакте</a>
-        <input type="text" class="search" placeholder="Поиск">
-        <div style="color:#fff; font-size:12px;">Выйти</div>
+    <div class="h-wrap">
+        <div class="logo-text" onclick="location.reload()">SLAPYA<span>_TV</span></div>
+        <div style="font-size: 12px; background: rgba(255,255,255,0.1); padding: 5px 15px; border-radius: 20px; cursor: pointer;">Поиск каналов</div>
     </div>
 </header>
 
 <div class="container">
     <nav>
         <ul>
-            <li style="font-weight:bold; background:#dae1e8; border-radius:4px;">Моя Страница</li>
-            <li>Новости <span class="count">2</span></li>
-            <li>Сообщения</li>
-            <li>Друзья</li>
-            <li>Сообщества</li>
-            <li>Фотографии</li>
-            <li>Музыка</li>
-            <li>Видео</li>
-            <li>Игры</li>
+            <li id="l_profile" class="active" onclick="showTab('profile')">📺 Мой Канал</li>
+            <li id="l_news" onclick="showTab('news')">🔥 Тренды</li>
+            <li id="l_msg" onclick="showTab('msg')">💬 Чаты</li>
+            <li id="l_chan" onclick="showTab('chan')">🎥 Все Эфиры</li>
         </ul>
     </nav>
 
-    <main>
-        <div class="col-left">
-            <div class="card avatar-box" style="padding:0">
-                <img src="https://pinimg.com" alt="Дуров">
+    <!-- МОЙ КАНАЛ -->
+    <main id="tab_profile" class="active">
+        <div style="width: 200px;">
+            <div class="card" style="padding:0; overflow:hidden;">
+                <img id="userAva" src="https://placeholder.com">
                 <div style="padding:15px">
-                    <div class="btn-gray">Редактировать</div>
-                </div>
-            </div>
-            
-            <div class="card" style="padding:10px">
-                <div style="font-size:12px; color:#2a5885; margin-bottom:10px;">Друзья <span style="color:#939393">145</span></div>
-                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:5px; text-align:center; font-size:11px;">
-                    <div><div style="width:50px; height:50px; background:#f0f2f5; margin:0 auto; border-radius:50%"></div>Маша</div>
-                    <div><div style="width:50px; height:50px; background:#f0f2f5; margin:0 auto; border-radius:50%"></div>Саня</div>
-                    <div><div style="width:50px; height:50px; background:#f0f2f5; margin:0 auto; border-radius:50%"></div>Кирилл</div>
+                    <button class="btn" style="width:100%" onclick="toggleBox('editBox')">Настроить TV</button>
                 </div>
             </div>
         </div>
-
-        <div class="col-right">
-            <div class="card">
-                <h2>Павел Дуров <span style="color:#939393; font-size:12px; float:right;">online</span></h2>
-                <div class="status">Создаю будущее...</div>
-                
-                <div class="info-row"><div class="label">День рождения:</div><div class="value">10 октября 1984 г.</div></div>
-                <div class="info-row"><div class="label">Город:</div><div class="value">Санкт-Петербург</div></div>
-                <div class="info-row"><div class="label">Языки:</div><div class="value">Русский, English, Français</div></div>
-                
-                <div class="stats">
-                    <a class="stat-item"><div class="stat-num">145</div><div class="stat-label">друзей</div></a>
-                    <a class="stat-item"><div class="stat-num">2.4M</div><div class="stat-label">подписчиков</div></a>
-                    <a class="stat-item"><div class="stat-num">12</div><div class="stat-label">фотографий</div></a>
-                    <a class="stat-item"><div class="stat-num">8</div><div class="stat-label">отметок</div></a>
-                </div>
-            </div>
-
-            <div class="card post-input">
-                <textarea id="postText" rows="1" placeholder="Что у Вас нового?" onclick="this.rows=3"></textarea>
-                <div id="btnBlock" style="display:none">
-                    <button class="post-btn" onclick="addPost()">Отправить</button>
-                </div>
+        <div style="width: 560px;">
+            <div id="editBox" class="card" style="display:none; border: 2px solid var(--main-color);">
+                <b>Настройки вещания:</b><br><br>
+                <input type="text" id="inName" placeholder="Название канала">
+                <input type="text" id="inStatus" placeholder="О чем твой эфир?">
+                <input type="text" id="inAva" placeholder="Ссылка на логотип канала">
+                <button class="btn" onclick="saveProfile()">Обновить эфир</button>
             </div>
             
-            <div id="wall">
-                <!-- Здесь будут посты -->
+            <div class="card">
+                <h2 id="outName" class="name-h2">SLAPYA USER</h2>
+                <div id="outStatus" class="status-text">В прямом эфире...</div>
+                <div style="font-size: 12px; color: #828282; margin-top: 10px;">Статус канала: <span style="color:var(--main-color)">● LIVE</span></div>
             </div>
+
+            <div class="card">
+                <textarea id="pText" rows="1" placeholder="Что нового на канале?" onclick="this.rows=3"></textarea>
+                <input type="text" id="pImg" placeholder="Ссылка на картинку/кадр из видео">
+                <button class="btn" style="float:right" onclick="addPost()">Выпустить пост</button>
+                <div style="clear:both"></div>
+            </div>
+            <div id="wall"></div>
         </div>
     </main>
+
+    <!-- ТРЕНДЫ -->
+    <main id="tab_news"><div class="card" style="width:100%"><h3>🔥 Тренды SLAPYA_TV</h3>Тут будут самые хайповые новости.</div></main>
+
+    <!-- ЧАТЫ -->
+    <main id="tab_msg"><div class="card" style="width:100%"><h3>💬 Чаты</h3>Здесь можно общаться со зрителями.</div></main>
+
+    <!-- ВСЕ ЭФИРЫ -->
+    <main id="tab_chan"><div class="card" style="width:100%"><h3>🎥 Все Эфиры</h3>Список всех активных каналов сети.</div></main>
 </div>
 
 <script>
-    // Раскрытие поля ввода
-    document.getElementById('postText').onclick = function() {
-        this.rows = 3;
-        document.getElementById('btnBlock').style.display = 'block';
+    window.onload = function() {
+        if(localStorage.getItem('tv_name')) document.getElementById('outName').innerText = localStorage.getItem('tv_name');
+        if(localStorage.getItem('tv_status')) document.getElementById('outStatus').innerText = localStorage.getItem('tv_status');
+        if(localStorage.getItem('tv_ava')) document.getElementById('userAva').src = localStorage.getItem('tv_ava');
     };
 
-    function addPost() {
-        const text = document.getElementById('postText').value;
-        if (!text) return;
+    function showTab(tab) {
+        document.querySelectorAll('main').forEach(m => m.classList.remove('active'));
+        document.querySelectorAll('nav li').forEach(l => l.classList.remove('active'));
+        document.getElementById('tab_' + tab).classList.add('active');
+        document.getElementById('l_' + tab).classList.add('active');
+    }
+
+    function toggleBox(id) {
+        let el = document.getElementById(id);
+        el.style.display = el.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function saveProfile() {
+        let n = document.getElementById('inName').value;
+        let s = document.getElementById('inStatus').value;
+        let a = document.getElementById('inAva').value;
+
+        if(n) { localStorage.setItem('tv_name', n); document.getElementById('outName').innerText = n; }
+        if(s) { localStorage.setItem('tv_status', s); document.getElementById('outStatus').innerText = s; }
+        if(a) { localStorage.setItem('tv_ava', a); document.getElementById('userAva').src = a; }
         
-        const wall = document.getElementById('wall');
-        const post = document.createElement('div');
-        post.className = 'card wall-post';
+        toggleBox('editBox');
+    }
+
+    function addPost() {
+        let t = document.getElementById('pText').value;
+        let i = document.getElementById('pImg').value;
+        if(!t && !i) return;
+
+        let post = document.createElement('div');
+        post.className = 'card';
+        let imgHtml = i ? `<img src="${i}" class="post-img">` : '';
+        
         post.innerHTML = `
-            <div class="mini-ava"></div>
-            <div class="post-body">
-                <div class="post-author">Павел Дуров</div>
-                <div class="post-txt">${text}</div>
-                <div style="color:#939393; font-size:11px; margin-top:8px;">Только что</div>
-            </div>
+            <div style="color:var(--main-color); font-weight:bold; font-size:14px; margin-bottom:8px;">${document.getElementById('outName').innerText}</div>
+            <div style="font-size:14px; line-height:1.5;">${t}</div>
+            ${imgHtml}
+            <div class="like-btn" onclick="this.innerHTML='❤️ 1'">❤️ 0</div>
         `;
-        wall.prepend(post);
-        document.getElementById('postText').value = '';
-        document.getElementById('postText').rows = 1;
-        document.getElementById('btnBlock').style.display = 'none';
+        
+        document.getElementById('wall').prepend(post);
+        document.getElementById('pText').value = '';
+        document.getElementById('pImg').value = '';
     }
 </script>
-
 </body>
 </html>
 
