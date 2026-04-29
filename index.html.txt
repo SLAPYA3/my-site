@@ -3,41 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ВСети - Твоя социальная сеть</title>
+    <title>ВСети - Моя Страница</title>
     <style>
         :root { --vk-blue: #0077ff; --vk-bg: #edeef0; --vk-text: #2a5885; }
-        body { font-family: -apple-system, system-ui, Helvetica, sans-serif; background: var(--vk-bg); margin: 0; padding-bottom: 50px; }
-        header { background: #fff; padding: 12px; border-bottom: 1px solid #ddd; text-align: center; color: var(--vk-blue); font-weight: bold; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        body { font-family: -apple-system, system-ui, Helvetica, sans-serif; background: var(--vk-bg); margin: 0; }
+        header { background: #fff; padding: 10px; border-bottom: 1px solid #ddd; text-align: center; color: var(--vk-blue); font-weight: bold; position: sticky; top: 0; z-index: 100; }
         
         .container { display: flex; justify-content: center; padding: 20px; gap: 20px; max-width: 1000px; margin: 0 auto; }
         
+        /* Боковое меню */
         nav { width: 160px; position: sticky; top: 70px; height: fit-content; }
-        nav div { padding: 10px; cursor: pointer; color: var(--vk-text); transition: 0.2s; border-radius: 6px; }
+        nav div { padding: 10px; cursor: pointer; color: var(--vk-text); border-radius: 6px; font-size: 14px; }
         nav div:hover { background: #e1e3e6; }
-        nav div.active { font-weight: bold; background: #fff; }
+        nav div.active { font-weight: bold; }
 
         main { width: 550px; }
-        .card { background: #fff; padding: 20px; border-radius: 12px; border: 1px solid #e1e3e6; margin-bottom: 15px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
-        
-        /* Создание поста */
-        textarea { width: 100%; border: 1px solid #e1e3e6; border-radius: 8px; padding: 12px; resize: none; box-sizing: border-box; background: #f5f7f8; font-size: 14px; }
-        .controls { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
-        button { background: var(--vk-blue); color: #fff; border: none; padding: 8px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
-        button:hover { opacity: 0.9; }
+        .card { background: #fff; padding: 20px; border-radius: 12px; border: 1px solid #e1e3e6; margin-bottom: 15px; }
 
-        /* Пост */
-        .post-header { display: flex; align-items: center; gap: 10px; font-weight: bold; color: var(--vk-text); margin-bottom: 12px; }
-        .avatar { width: 40px; height: 40px; background: #ccc; border-radius: 50%; object-fit: cover; }
-        .post-content { font-size: 15px; line-height: 1.4; color: #000; margin-bottom: 15px; word-wrap: break-word; }
-        .post-footer { border-top: 1px solid #f0f2f5; pt: 10px; display: flex; gap: 15px; padding-top: 10px; }
-        .like-btn { cursor: pointer; color: #818c99; font-size: 14px; display: flex; align-items: center; gap: 5px; }
-        .like-btn.active { color: #ff3347; font-weight: bold; }
-        .del-btn { margin-left: auto; color: #adb2bc; cursor: pointer; font-size: 12px; }
+        /* Профиль */
+        .profile-header { display: flex; gap: 20px; }
+        .profile-avatar { width: 120px; height: 120px; background: #eee; border-radius: 8px; flex-shrink: 0; border: 1px solid #ddd; }
+        .profile-info h2 { margin: 0 0 10px 0; color: #000; }
+        .info-row { font-size: 13px; margin-bottom: 5px; color: #555; }
+        .info-row span { color: var(--vk-text); }
 
-        /* Мессенджер */
-        #messenger { display: none; }
-        .chat-box { height: 300px; overflow-y: auto; border: 1px solid #eee; padding: 10px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 8px; }
-        .msg { background: #e7f3ff; padding: 8px 12px; border-radius: 12px; align-self: flex-start; max-width: 80%; font-size: 14px; }
+        /* Посты */
+        .post-header { display: flex; align-items: center; gap: 10px; font-weight: bold; color: var(--vk-text); margin-bottom: 10px; }
+        .mini-avatar { width: 35px; height: 35px; background: #4a76a8; border-radius: 50%; }
+        .post-content { font-size: 14px; margin-bottom: 10px; }
+        .post-footer { color: #818c99; font-size: 13px; cursor: pointer; }
+
+        #profile-page, #messenger-page { display: none; }
     </style>
 </head>
 <body>
@@ -46,117 +42,80 @@
 
 <div class="container">
     <nav>
-        <div class="active" onclick="showPage('news')">Новости</div>
-        <div onclick="showPage('messenger')">Мессенджер</div>
-        <div onclick="alert('Профиль в разработке')">Мой профиль</div>
+        <div id="m_profile" onclick="showPage('profile')">Моя страница</div>
+        <div id="m_news" class="active" onclick="showPage('news')">Новости</div>
+        <div id="m_msg" onclick="showPage('messenger')">Мессенджер</div>
     </nav>
 
+    <!-- ЛЕНТА НОВОСТЕЙ -->
     <main id="news-page">
         <div class="card">
-            <textarea id="postText" rows="3" placeholder="Что у вас нового?"></textarea>
-            <div class="controls">
-                <input type="text" id="userName" placeholder="Твоё имя" style="border:1px solid #ddd; padding:5px; border-radius:5px;">
-                <button onclick="addPost()">Опубликовать</button>
-            </div>
+            <textarea id="postText" placeholder="Что нового?" style="width:100%; border:1px solid #ddd; padding:10px; border-radius:8px;"></textarea>
+            <button onclick="addPost()" style="margin-top:10px; background:var(--vk-blue); color:#fff; border:none; padding:7px 15px; border-radius:5px; cursor:pointer; float:right;">Опубликовать</button>
+            <div style="clear:both;"></div>
         </div>
         <div id="feed"></div>
     </main>
 
-    <main id="messenger" class="card">
-        <h3>Личные сообщения</h3>
-        <div class="chat-box" id="chatBox">
-            <div class="msg">Бот: Привет! Это тестовый чат. Напиши что-нибудь!</div>
+    <!-- СТРАНИЦА ПРОФИЛЯ -->
+    <main id="profile-page">
+        <div class="card profile-header">
+            <div class="profile-avatar"><img src="https://placeholder.com" style="width:100%; border-radius:8px;"></div>
+            <div class="profile-info">
+                <h2>Разработчик Сайта</h2>
+                <div class="info-row">День рождения: <span>30 апреля</span></div>
+                <div class="info-row">Город: <span>GitHub City</span></div>
+                <div class="info-row">Статус: <span>Создаю свою соцсеть! 😎</span></div>
+            </div>
         </div>
-        <div style="display:flex; gap:10px;">
-            <input type="text" id="msgInput" style="flex:1; padding:10px; border-radius:8px; border:1px solid #ddd;" placeholder="Сообщение...">
-            <button onclick="sendMsg()">Отправить</button>
+        <div class="card">
+            <strong>О себе:</strong><br>
+            <p style="font-size:13px; color:#333;">Я учусь кодить и это мой первый проект на GitHub.</p>
+        </div>
+    </main>
+
+    <!-- МЕССЕНДЖЕР -->
+    <main id="messenger-page">
+        <div class="card">
+            <h3>Мессенджер</h3>
+            <p style="color:#888;">Здесь будут твои диалоги...</p>
         </div>
     </main>
 </div>
 
 <script>
-    let posts = JSON.parse(localStorage.getItem('posts')) || [];
-
-    // Показываем посты при загрузке
-    renderPosts();
-
     function showPage(page) {
-        document.getElementById('news-page').style.display = page === 'news' ? 'block' : 'none';
-        document.getElementById('messenger').style.display = page === 'messenger' ? 'block' : 'none';
+        // Скрываем все страницы
+        document.getElementById('news-page').style.display = 'none';
+        document.getElementById('profile-page').style.display = 'none';
+        document.getElementById('messenger-page').style.display = 'none';
+        
+        // Показываем нужную
+        document.getElementById(page + '-page').style.display = 'block';
+        
+        // Меняем активный пункт меню
         document.querySelectorAll('nav div').forEach(el => el.classList.remove('active'));
-        event.target.classList.add('active');
+        if(page === 'profile') document.getElementById('m_profile').classList.add('active');
+        if(page === 'news') document.getElementById('m_news').classList.add('active');
+        if(page === 'messenger') document.getElementById('m_msg').classList.add('active');
     }
 
     function addPost() {
         const text = document.getElementById('postText').value;
-        const name = document.getElementById('userName').value || 'Аноним';
         if (!text) return;
-
-        const newPost = {
-            id: Date.now(),
-            author: name,
-            content: text,
-            likes: 0,
-            liked: false
-        };
-
-        posts.unshift(newPost);
-        saveAndRender();
+        const feed = document.getElementById('feed');
+        const post = document.createElement('div');
+        post.className = 'card';
+        post.innerHTML = `
+            <div class="post-header"><div class="mini-avatar"></div>Разработчик</div>
+            <div class="post-content">${text}</div>
+            <div class="post-footer">❤ Лайк</div>
+        `;
+        feed.prepend(post);
         document.getElementById('postText').value = '';
     }
-
-    function toggleLike(id) {
-        const post = posts.find(p => p.id === id);
-        if (post.liked) {
-            post.likes--;
-            post.liked = false;
-        } else {
-            post.likes++;
-            post.liked = true;
-        }
-        saveAndRender();
-    }
-
-    function deletePost(id) {
-        posts = posts.filter(p => p.id !== id);
-        saveAndRender();
-    }
-
-    function saveAndRender() {
-        localStorage.setItem('posts', JSON.stringify(posts));
-        renderPosts();
-    }
-
-    function renderPosts() {
-        const feed = document.getElementById('feed');
-        feed.innerHTML = '';
-        posts.forEach(post => {
-            feed.innerHTML += `
-                <div class="card">
-                    <div class="post-header">
-                        <div class="avatar" style="background: hsl(${post.id % 360}, 70%, 80%)"></div>
-                        ${post.author}
-                        <span class="del-btn" onclick="deletePost(${post.id})">Удалить</span>
-                    </div>
-                    <div class="post-content">${post.content}</div>
-                    <div class="post-footer">
-                        <div class="like-btn ${post.liked ? 'active' : ''}" onclick="toggleLike(${post.id})">
-                            ❤ ${post.likes}
-                        </div>
-                    </div>
-                </div>
-            `;
-        });
-    }
-
-    function sendMsg() {
-        const input = document.getElementById('msgInput');
-        if (!input.value) return;
-        const chat = document.getElementById('chatBox');
-        chat.innerHTML += `<div class="msg" style="align-self: flex-end; background: #cee3ff;">${input.value}</div>`;
-        input.value = '';
-        chat.scrollTop = chat.scrollHeight;
-    }
 </script>
+
 </body>
 </html>
+
