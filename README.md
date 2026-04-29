@@ -2,159 +2,146 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SLAPYA_TV | Прямой Эфир</title>
+    <title>SLAPYA_TV | Real Edition</title>
     <style>
-        :root { --main: #ff004d; --bg: #edeef0; --text: #2a5885; }
-        body { font-family: tahoma, arial, sans-serif; background: var(--bg); margin: 0; padding-top: 60px; }
-        header { background: #222; height: 50px; position: fixed; top: 0; width: 100%; z-index: 1000; display: flex; justify-content: center; border-bottom: 2px solid var(--main); }
-        .h-wrap { width: 960px; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; color: white; }
-        .logo { font-size: 22px; font-weight: bold; text-transform: uppercase; cursor: pointer; color: #fff; text-decoration:none; }
+        :root { --main: #ff004d; --bg: #000; --card: #1a1a1a; --text: #fff; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-top: 60px; }
+        
+        header { background: #111; height: 50px; position: fixed; top: 0; width: 100%; z-index: 1000; border-bottom: 2px solid var(--main); display: flex; justify-content: center; align-items: center; }
+        .logo { font-size: 22px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; }
         .logo span { color: var(--main); }
-        .container { width: 960px; margin: 0 auto; display: flex; gap: 20px; }
-        nav { width: 160px; }
-        nav li { list-style: none; padding: 10px; color: var(--text); cursor: pointer; font-size: 14px; border-radius: 6px; margin-bottom: 5px; }
-        nav li:hover { background: #dae1e8; }
-        nav li.active { font-weight: bold; background: #dae1e8; border-left: 3px solid var(--main); }
-        main { width: 780px; display: none; }
+
+        .container { width: 900px; margin: 0 auto; display: flex; gap: 20px; }
+        nav { width: 180px; }
+        nav li { list-style: none; padding: 12px; color: #aaa; cursor: pointer; border-radius: 8px; margin-bottom: 5px; transition: 0.3s; }
+        nav li:hover, nav li.active { background: var(--card); color: var(--main); font-weight: bold; }
+
+        main { flex-grow: 1; display: none; }
         main.active { display: block; }
-        .card { background: #fff; border-radius: 8px; border: 1px solid #d7d8db; margin-bottom: 15px; padding: 15px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+        .card { background: var(--card); border-radius: 12px; padding: 20px; margin-bottom: 20px; border: 1px solid #333; }
+
+        /* Загрузка медиа */
+        .file-label { background: #333; color: #fff; padding: 10px; display: inline-block; border-radius: 6px; cursor: pointer; margin-top: 10px; font-size: 13px; }
+        .file-label:hover { background: #444; }
+        #fileInput { display: none; }
         
-        /* ЧАТ - ВОТ ТУТ ГЛАВНОЕ */
-        .chat-container { display: flex; flex-direction: column; height: 450px; }
-        #chatWindow { flex-grow: 1; overflow-y: auto; border: 1px solid #eee; padding: 15px; margin-bottom: 10px; background: #fdfdfd; border-radius: 6px; display: flex; flex-direction: column; gap: 10px; }
-        .msg { padding: 8px 12px; border-radius: 12px; max-width: 70%; font-size: 14px; line-height: 1.4; position: relative; }
-        .msg.bot { background: #f0f2f5; align-self: flex-start; border-bottom-left-radius: 2px; }
-        .msg.user { background: #ffe0e9; align-self: flex-end; border-bottom-right-radius: 2px; border: 1px solid #ffb3c6; }
-        .msg-author { font-weight: bold; font-size: 11px; margin-bottom: 3px; display: block; }
-        
-        .chat-input-area { display: flex; gap: 10px; }
-        #chatInput { flex-grow: 1; padding: 10px; border: 1px solid #dae1e8; border-radius: 6px; outline: none; }
-        .send-btn { background: var(--main); color: #fff; border: none; padding: 0 20px; border-radius: 6px; cursor: pointer; font-weight: bold; }
-        
-        /* Остальное */
-        .btn { background: var(--main); color: #fff; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-size: 12px; }
-        input, textarea { width: 100%; margin-bottom: 10px; padding: 10px; border: 1px solid #dae1e8; border-radius: 6px; box-sizing: border-box; }
+        #preview { max-width: 100%; margin-top: 10px; border-radius: 8px; display: none; }
+
+        /* Чат */
+        #chatWindow { height: 350px; overflow-y: auto; background: #111; border-radius: 8px; padding: 15px; display: flex; flex-direction: column; gap: 10px; border: 1px solid #222; }
+        .msg { padding: 10px; border-radius: 10px; max-width: 80%; font-size: 14px; }
+        .msg.my { align-self: flex-end; background: var(--main); color: #fff; }
+        .msg.other { align-self: flex-start; background: #333; }
+
+        input, textarea { width: 100%; background: #222; border: 1px solid #444; color: #fff; padding: 12px; border-radius: 8px; box-sizing: border-box; margin-bottom: 10px; }
+        .btn { background: var(--main); color: #fff; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; }
     </style>
 </head>
 <body>
 
-<header><div class="h-wrap"><a href="#" class="logo">SLAPYA<span>_TV</span></a><div style="color:var(--main); font-weight:bold;">LIVE</div></div></header>
+<header><div class="logo">SLAPYA<span>_TV</span></div></header>
 
 <div class="container">
     <nav>
-        <li id="l_profile" class="active" onclick="showTab('profile')">📺 Мой Канал</li>
-        <li id="l_news" onclick="showTab('news')">🔥 Тренды</li>
-        <li id="l_msg" onclick="showTab('msg')">💬 Чаты</li>
+        <li class="active" onclick="showTab('profile')">📺 МОЙ КАНАЛ</li>
+        <li onclick="showTab('chat')">💬 ОБЩИЙ ЧАТ</li>
     </nav>
 
+    <!-- МОЙ КАНАЛ -->
     <main id="tab_profile" class="active">
-        <div class="card" style="display:flex; gap:20px;">
-            <img id="userAva" src="https://placeholder.com" style="width:150px; height:150px; border-radius:8px; object-fit:cover;">
-            <div>
-                <h2 id="outName">SLAPYA USER</h2>
-                <div id="outStatus" style="font-style:italic; color:#666;">В эфире...</div>
-                <button class="btn" style="margin-top:15px;" onclick="toggleBox('editBox')">Настроить канал</button>
-            </div>
-        </div>
-        <div id="editBox" class="card" style="display:none;">
-            <input type="text" id="inName" placeholder="Название">
-            <input type="text" id="inStatus" placeholder="Статус">
-            <input type="text" id="inAva" placeholder="Ссылка на аву">
-            <button class="btn" onclick="saveProfile()">Сохранить</button>
-        </div>
         <div class="card">
-            <textarea id="pText" rows="2" placeholder="Что нового в эфире?"></textarea>
-            <button class="btn" style="float:right" onclick="addPost()">Пост</button>
-            <div style="clear:both"></div>
+            <h2 style="margin:0">Создать пост</h2>
+            <textarea id="postText" rows="3" placeholder="Что в эфире?"></textarea>
+            
+            <label class="file-label" for="fileInput">📁 Выбрать фото/видео из галереи</label>
+            <input type="file" id="fileInput" accept="image/*,video/*" onchange="previewMedia()">
+            
+            <img id="preview">
+            <video id="vPreview" controls style="display:none; max-width:100%; margin-top:10px; border-radius:8px;"></video>
+            
+            <button class="btn" style="margin-top:15px" onclick="uploadPost()">ОПУБЛИКОВАТЬ</button>
         </div>
         <div id="wall"></div>
     </main>
 
-    <main id="tab_news"><div class="card"><h3>🔥 Тренды</h3><p>Тут будут горячие эфиры.</p></div></main>
-
-    <!-- ЧАТ - РАБОЧИЙ -->
-    <main id="tab_msg">
-        <div class="card chat-container">
-            <h3 style="margin-top:0;">💬 Общий чат SLAPYA_TV</h3>
+    <!-- ЧАТ -->
+    <main id="tab_chat">
+        <div class="card">
+            <h3>💬 GLOBAL CHAT (BETA)</h3>
             <div id="chatWindow">
-                <div class="msg bot"><span class="msg-author">Система</span>Добро пожаловать в прямой эфир! Напиши что-нибудь в чат.</div>
+                <div class="msg other"><b>Система:</b> Чтобы чат стал общим для всех, нужно подключить Firebase.</div>
             </div>
-            <div class="chat-input-area">
-                <input type="text" id="chatInput" placeholder="Ваше сообщение..." onkeypress="if(event.keyCode==13) sendMsg()">
-                <button class="send-btn" onclick="sendMsg()">ОТПРАВИТЬ</button>
+            <div style="display:flex; gap:10px; margin-top:15px">
+                <input type="text" id="chatInput" placeholder="Твоё сообщение...">
+                <button class="btn" style="width:auto" onclick="sendMsg()">📡</button>
             </div>
         </div>
     </main>
 </div>
 
 <script>
-    window.onload = function() {
-        if(localStorage.getItem('tv_name')) document.getElementById('outName').innerText = localStorage.getItem('tv_name');
-        if(localStorage.getItem('tv_status')) document.getElementById('outStatus').innerText = localStorage.getItem('tv_status');
-        if(localStorage.getItem('tv_ava')) document.getElementById('userAva').src = localStorage.getItem('tv_ava');
-    };
-
     function showTab(tab) {
         document.querySelectorAll('main').forEach(m => m.classList.remove('active'));
         document.querySelectorAll('nav li').forEach(l => l.classList.remove('active'));
         document.getElementById('tab_' + tab).classList.add('active');
-        document.getElementById('l_' + tab).classList.add('active');
+        event.target.classList.add('active');
     }
 
-    function toggleBox(id) {
-        let el = document.getElementById(id);
-        el.style.display = el.style.display === 'block' ? 'none' : 'block';
+    // Превью из галереи
+    function previewMedia() {
+        const file = document.getElementById('fileInput').files[0];
+        const reader = new FileReader();
+        const img = document.getElementById('preview');
+        const vid = document.getElementById('vPreview');
+
+        reader.onload = function(e) {
+            if (file.type.includes('image')) {
+                img.src = e.target.result;
+                img.style.display = 'block';
+                vid.style.display = 'none';
+            } else {
+                vid.src = e.target.result;
+                vid.style.display = 'block';
+                img.style.display = 'none';
+            }
+        }
+        reader.readAsDataURL(file);
     }
 
-    function saveProfile() {
-        let n = document.getElementById('inName').value;
-        let s = document.getElementById('inStatus').value;
-        let a = document.getElementById('inAva').value;
-        if(n) { localStorage.setItem('tv_name', n); document.getElementById('outName').innerText = n; }
-        if(s) { localStorage.setItem('tv_status', s); document.getElementById('outStatus').innerText = s; }
-        if(a) { localStorage.setItem('tv_ava', a); document.getElementById('userAva').src = a; }
-        toggleBox('editBox');
-    }
+    function uploadPost() {
+        const text = document.getElementById('postText').value;
+        const img = document.getElementById('preview');
+        const vid = document.getElementById('vPreview');
+        const wall = document.getElementById('wall');
 
-    function addPost() {
-        let t = document.getElementById('pText').value;
-        if(!t) return;
-        let wall = document.getElementById('wall');
-        let post = document.createElement('div');
+        if(!text && img.style.display === 'none' && vid.style.display === 'none') return;
+
+        const post = document.createElement('div');
         post.className = 'card';
-        post.innerHTML = `<b>${document.getElementById('outName').innerText}</b><p>${t}</p>`;
+        
+        let mediaHtml = '';
+        if(img.style.display === 'block') mediaHtml = `<img src="${img.src}" style="max-width:100%; border-radius:8px; margin-top:10px;">`;
+        if(vid.style.display === 'block') mediaHtml = `<video src="${vid.src}" controls style="max-width:100%; border-radius:8px; margin-top:10px;"></video>`;
+
+        post.innerHTML = `<b>SLAPYA USER</b><p>${text}</p>${mediaHtml}`;
         wall.prepend(post);
-        document.getElementById('pText').value = '';
+
+        // Очистка
+        document.getElementById('postText').value = '';
+        img.style.display = 'none';
+        vid.style.display = 'none';
     }
 
-    // ЛОГИКА ЧАТА
     function sendMsg() {
-        let input = document.getElementById('chatInput');
-        let window = document.getElementById('chatWindow');
-        let text = input.value.trim();
-        
-        if(!text) return;
-
-        // Добавляем твое сообщение
-        let myMsg = document.createElement('div');
-        myMsg.className = 'msg user';
-        myMsg.innerHTML = `<span class="msg-author">Вы (Ведущий)</span>${text}`;
-        window.appendChild(myMsg);
-        
+        const input = document.getElementById('chatInput');
+        if(!input.value) return;
+        const win = document.getElementById('chatWindow');
+        const m = document.createElement('div');
+        m.className = 'msg my';
+        m.innerHTML = input.value;
+        win.appendChild(m);
         input.value = '';
-        window.scrollTop = window.scrollHeight;
-
-        // Имитация ответа через секунду
-        setTimeout(() => {
-            let botMsg = document.createElement('div');
-            botMsg.className = 'msg bot';
-            let answers = ["Четко сказано!", "Согласен!", "SLAPYA_TV — топ!", "Когда следующий эфир?", "Вау! 🔥"];
-            let randomText = answers[Math.floor(Math.random() * answers.length)];
-            botMsg.innerHTML = `<span class="msg-author">Зритель_${Math.floor(Math.random()*100)}</span>${randomText}`;
-            window.appendChild(botMsg);
-            window.scrollTop = window.scrollHeight;
-        }, 1000);
+        win.scrollTop = win.scrollHeight;
     }
 </script>
 </body>
