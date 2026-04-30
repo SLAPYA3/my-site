@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Чат для Вас!</title>
     
-    <!-- ПРАВИЛЬНЫЕ СКРИПТЫ (Firebase 9.23 Compat) -->
     <script src="https://gstatic.com"></script>
     <script src="https://gstatic.com"></script>
     <script src="https://gstatic.com"></script>
@@ -21,7 +20,7 @@
         .mine { align-self: flex-end; background: #ff004d; color: #fff; }
         .input-area { display: flex; gap: 10px; margin-top: 10px; background: #1a1a1a; padding: 10px; border-radius: 25px; }
         input { flex: 1; border: none; background: transparent; color: #fff; outline: none; font-size: 15px; }
-        button { background: #ff004d; border: none; color: #fff; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        button { background: #ff004d; border: none; color: #fff; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .yt-icon { width: 45px; height: 45px; border-radius: 50%; border: 2px solid #ff004d; object-fit: cover; }
     </style>
 </head>
@@ -40,18 +39,6 @@
     </div>
 
 <script>
-    // ТВОЙ КОНФИГ С УЖЕ ВПИСАННЫМИ АДРЕСАМИ
-    const firebaseConfig = {
-        apiKey: "AIzaSyBCuF9Eeu4Imh8kzHto2rNor-P_bgjpeWU",
-        authDomain: "://firebaseapp.com",
-        databaseURL: "https://firebaseio.com",
-        projectId: "slapya-tv",
-        storageBucket: "slapya-tv.firebasestorage.app",
-        messagingSenderId: "136766849891",
-        appId: "1:136766849891:web:deba1aac85e51e6e4894f6"
-    };
-
-    // Запуск только после загрузки Firebase
     const start = setInterval(() => {
         if (typeof firebase !== 'undefined') {
             clearInterval(start);
@@ -60,13 +47,22 @@
     }, 500);
 
     function init() {
+        // ТУТ Я ВПИСАЛ ТВОИ РЕАЛЬНЫЕ ДАННЫЕ
+        const firebaseConfig = {
+            apiKey: "AIzaSyBCuF9Eeu4Imh8kzHto2rNor-P_bgjpeWU",
+            authDomain: "://firebaseapp.com",
+            databaseURL: "https://firebaseio.com",
+            projectId: "slapya-tv",
+            storageBucket: "slapya-tv.firebasestorage.app",
+            messagingSenderId: "136766849891",
+            appId: "1:136766849891:web:deba1aac85e51e6e4894f6"
+        };
+
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
         
-        // Вход
         firebase.auth().signInAnonymously().catch(e => console.log("Вход..."));
 
-        // Точка статуса
         db.ref(".info/connected").on("value", (s) => {
             const dot = document.getElementById('status-dot');
             dot.style.background = s.val() ? "lime" : "red";
@@ -98,6 +94,5 @@
 </script>
 </body>
 </html>
-
 
 
