@@ -28,13 +28,9 @@
         
         .input-area { display: flex; gap: 10px; align-items: center; margin-top: 15px; background: #1a1a1a; padding: 8px 12px; border-radius: 25px; }
         input { flex: 1; padding: 5px; border: none; background: transparent; color: #fff; outline: none; font-size: 15px; }
-        
-        /* НОВАЯ ИКОНКА САМОЛЕТА ДЛЯ ВЫБОРА ФОТО */
-        .file-label { cursor: pointer; font-size: 22px; transition: 0.2s; opacity: 0.8; display: flex; align-items: center; }
-        .file-label:hover { opacity: 1; color: #ff004d; transform: rotate(-15deg); }
+        .file-label { cursor: pointer; font-size: 22px; transition: 0.2s; opacity: 0.8; }
         #avatarInput { display: none; }
-        
-        .send-btn { background: #ff004d; color: #fff; border: none; border-radius: 50%; width: 35px; height: 35px; cursor: pointer; font-weight: bold; display: flex; align-items: center; justify-content: center; }
+        .send-btn { background: #ff004d; color: #fff; border: none; border-radius: 50%; width: 35px; height: 35px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
 <body>
@@ -46,12 +42,9 @@
     <div class="card">
         <div class="header">
             <div class="logo">ЧАТ ДЛЯ ВАС!</div>
-            <!-- ЗАМЕНИЛИ ФОТОАППАРАТ НА САМОЛЕТИК -->
             <label class="file-label" title="Выбрать аву">✈️<input type="file" id="avatarInput" accept="image/*"></label>
         </div>
-        
         <div id="chatBox"></div>
-        
         <div class="input-area">
             <img id="myCurrentAv" src="" class="current-user-av">
             <input type="text" id="chatInput" placeholder="Напишите..." autocomplete="off">
@@ -75,16 +68,33 @@
     const myImgDisplay = document.getElementById('myCurrentAv');
     myImgDisplay.src = userAvatar;
 
-    document.getElementById('avatarInput').addEventListener('change', function(e) {
-        const file = e.target.files;
-        if (!file) return;
+    // ФУНКЦИЯ СЖАТИЯ КАРТИНКИ
+    function resizeImage(file, callback) {
         const reader = new FileReader();
-        reader.onload = function(event) {
-            userAvatar = event.target.result;
-            localStorage.setItem('userAvatar', userAvatar);
-            myImgDisplay.src = userAvatar;
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const MAX_SIZE = 100; // Размер иконки
+                let width = img.width, height = img.height;
+                if (width > height) { if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; } }
+                else { if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; } }
+                canvas.width = width; canvas.height = height;
+                canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+                callback(canvas.toDataURL('image/jpeg', 0.7)); // 0.7 - качество
+            };
+            img.src = e.target.result;
         };
         reader.readAsDataURL(file);
+    }
+
+    document.getElementById('avatarInput').addEventListener('change', function(e) {
+        if (!e.target.files[0]) return;
+        resizeImage(e.target.files[0], (resizedData) => {
+            userAvatar = resizedData;
+            localStorage.setItem('userAvatar', userAvatar);
+            myImgDisplay.src = userAvatar;
+        });
     });
 
     window.send = function() {
@@ -99,11 +109,9 @@
         const isMine = msg.userId === userId;
         const wrapper = document.createElement('div');
         wrapper.className = `msg-wrapper ${isMine ? 'mine' : 'others'}`;
-        const displayAv = msg.avatar || 'https://pravatar.cc';
-        wrapper.innerHTML = `<img src="${displayAv}" class="avatar"><div class="msg">${msg.text}</div>`;
-        const chatBox = document.getElementById('chatBox');
-        chatBox.appendChild(wrapper);
-        chatBox.scrollTop = chatBox.scrollHeight;
+        wrapper.innerHTML = `<img src="${msg.avatar || 'https://pravatar.cc'}" class="avatar"><div class="msg">${msg.text}</div>`;
+        document.getElementById('chatBox').appendChild(wrapper);
+        document.getElementById('chatBox').scrollTop = document.getElementById('chatBox').scrollHeight;
     });
 </script>
 </body>
