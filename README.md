@@ -8,7 +8,7 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { background: #080808; color: #fff; font-family: sans-serif; margin: 0; padding: 0; overflow: hidden; height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; }
         
-        /* КНОПКА ЮТУБА С АНГЕЛОЧКОМ ИЗ PINTEREST */
+        /* ЮТУБ-АНГЕЛОЧЕК В УГЛУ ЭКРАНА */
         .top-yt-link { 
             position: fixed; 
             top: 20px; 
@@ -35,7 +35,7 @@
             position: absolute; 
             bottom: 5px; 
             right: 5px; 
-            box-shadow: 0 0 8px #00ff00;
+            box-shadow: 0 0 10px #00ff00;
         }
 
         .card { background: #111; border: 1px solid #222; border-radius: 25px; width: 95%; max-width: 400px; height: 85vh; display: flex; flex-direction: column; padding: 15px; box-shadow: 0 20px 60px rgba(0,0,0,1); position: relative; z-index: 10; }
@@ -66,9 +66,9 @@
 </head>
 <body>
 
-    <!-- ССЫЛКА НА ПОСТЫ И ПРЯМОЙ АДРЕС КАРТИНКИ -->
     <a href="https://youtube.com" target="_blank" class="top-yt-link">
-        <img src="https://pinimg.com" class="yt-img" alt="YT">
+        <!-- ТЕПЕРЬ ССЫЛАЕМСЯ НА ФАЙЛ, КОТОРЫЙ ТЫ ЗАГРУЗИЛ -->
+        <img src="yt.jpg" onerror="this.src='https://pravatar.cc'" class="yt-img">
         <div class="yt-status"></div>
     </a>
 
@@ -133,6 +133,7 @@
 </script>
 </body>
 </html>
+
 
 
 
