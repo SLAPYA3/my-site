@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Чат для Вас!</title>
     
+    <!-- ПОДКЛЮЧЕНИЕ БИБЛИОТЕК -->
     <script src="https://gstatic.com"></script>
     <script src="https://gstatic.com"></script>
     <script src="https://gstatic.com"></script>
@@ -12,7 +13,7 @@
     <style>
         * { box-sizing: border-box; }
         body { background: #080808; color: #fff; font-family: sans-serif; margin: 0; height: 100vh; display: flex; align-items: center; justify-content: center; }
-        .card { background: #111; border: 1px solid #222; border-radius: 20px; width: 95%; max-width: 400px; height: 85vh; display: flex; flex-direction: column; padding: 15px; }
+        .card { background: #111; border: 1px solid #222; border-radius: 20px; width: 95%; max-width: 400px; height: 85vh; display: flex; flex-direction: column; padding: 15px; position: relative; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         #status-dot { width: 10px; height: 10px; background: red; border-radius: 50%; display: inline-block; margin-right: 5px; box-shadow: 0 0 5px red; transition: 0.5s; }
         #chatBox { flex: 1; overflow-y: auto; background: #050505; border-radius: 15px; padding: 10px; display: flex; flex-direction: column; gap: 10px; }
@@ -20,8 +21,9 @@
         .mine { align-self: flex-end; background: #ff004d; color: #fff; }
         .input-area { display: flex; gap: 10px; margin-top: 10px; background: #1a1a1a; padding: 10px; border-radius: 25px; }
         input { flex: 1; border: none; background: transparent; color: #fff; outline: none; font-size: 15px; }
-        button { background: #ff004d; border: none; color: #fff; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .yt-icon { width: 45px; height: 45px; border-radius: 50%; border: 2px solid #ff004d; object-fit: cover; }
+        button { background: #ff004d; border: none; color: #fff; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .yt-icon { width: 45px; height: 45px; border-radius: 50%; border: 2px solid #ff004d; object-fit: cover; cursor: pointer; transition: 0.3s; }
+        .yt-icon:hover { transform: scale(1.1); box-shadow: 0 0 10px #ff004d; }
     </style>
 </head>
 <body>
@@ -29,7 +31,10 @@
     <div class="card">
         <div class="header">
             <div><div id="status-dot"></div> <b style="color:#ff004d; font-size: 14px;">ЧАТ ДЛЯ ВАС!</b></div>
-            <img src="yt.jpg" onerror="this.src='https://pravatar.cc'" class="yt-icon">
+            <!-- ТВОЯ ССЫЛКА НА ЮТУБ -->
+            <a href="https://www.youtube.com/@SLAPYA" target="_blank">
+                <img src="yt.jpg" onerror="this.src='https://pravatar.cc'" class="yt-icon" title="Мой YouTube канал">
+            </a>
         </div>
         <div id="chatBox"></div>
         <div class="input-area">
@@ -39,15 +44,15 @@
     </div>
 
 <script>
-    const start = setInterval(() => {
+    // Проверка загрузки Firebase
+    const checkLoad = setInterval(() => {
         if (typeof firebase !== 'undefined') {
-            clearInterval(start);
-            init();
+            clearInterval(checkLoad);
+            startApp();
         }
     }, 500);
 
-    function init() {
-        // ТУТ Я ВПИСАЛ ТВОИ РЕАЛЬНЫЕ ДАННЫЕ
+    function startApp() {
         const firebaseConfig = {
             apiKey: "AIzaSyBCuF9Eeu4Imh8kzHto2rNor-P_bgjpeWU",
             authDomain: "://firebaseapp.com",
@@ -60,8 +65,9 @@
 
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-        
-        firebase.auth().signInAnonymously().catch(e => console.log("Вход..."));
+        const auth = firebase.auth();
+
+        auth.signInAnonymously().catch(e => console.log("Вход..."));
 
         db.ref(".info/connected").on("value", (s) => {
             const dot = document.getElementById('status-dot');
@@ -74,7 +80,7 @@
         function send() {
             const i = document.getElementById('chatInput');
             if (!i.value.trim()) return;
-            db.ref('messages').push({ u: myId, t: i.value });
+            db.ref('messages').push({ u: myId, t: i.value }).catch(e => alert("Ошибка! Проверь Rules в Firebase"));
             i.value = "";
         }
 
@@ -94,5 +100,3 @@
 </script>
 </body>
 </html>
-
-
