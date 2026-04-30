@@ -3,29 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Чат для Вас!</title>
+    <title>ЧАТ ДЛЯ ВАС!</title>
     <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { background: #080808; color: #fff; font-family: sans-serif; margin: 0; padding: 0; overflow: hidden; height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; }
         
-        /* ЮТУБ-АНГЕЛОЧЕК В УГЛУ */
-        .top-yt-link { position: absolute; top: 20px; right: 20px; text-decoration: none; z-index: 9999; transition: 0.3s; }
-        .top-yt-link:hover { transform: scale(1.1); filter: drop-shadow(0 0 15px #ff004d); }
-        .yt-img { width: 65px; height: 65px; border-radius: 50%; border: 3px solid #ff004d; object-fit: cover; background: #222; }
+        .top-yt-link { position: absolute; top: 20px; right: 20px; text-decoration: none; z-index: 999; transition: 0.3s; }
+        .yt-img { width: 60px; height: 60px; border-radius: 50%; border: 2px solid #ff004d; object-fit: cover; background: #222; }
 
         .card { background: #111; border: 1px solid #222; border-radius: 25px; width: 95%; max-width: 420px; height: 85vh; display: flex; flex-direction: column; padding: 15px; box-shadow: 0 20px 60px rgba(0,0,0,1); position: relative; z-index: 10; }
         .header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px solid #1a1a1a; margin-bottom: 10px; }
         .logo { font-size: 18px; font-weight: 900; color: #ff004d; text-transform: uppercase; }
         
         #chatBox { flex: 1; overflow-y: auto; background: #050505; border-radius: 18px; padding: 12px; display: flex; flex-direction: column; gap: 10px; scroll-behavior: smooth; }
-        #chatBox::-webkit-scrollbar { width: 4px; }
-        #chatBox::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
-
-        .msg-wrapper { display: flex; align-items: flex-end; gap: 8px; max-width: 85%; animation: fadeIn 0.2s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .msg-wrapper { display: flex; align-items: flex-end; gap: 8px; max-width: 85%; }
         .msg-wrapper.mine { flex-direction: row-reverse; align-self: flex-end; }
         
-        .avatar, .current-user-av { width: 35px; height: 35px; border-radius: 50%; border: 1.5px solid #ff004d !important; object-fit: cover; background: #333; flex-shrink: 0; display: block; }
+        .avatar, .current-user-av { width: 35px; height: 35px; border-radius: 50%; border: 1.5px solid #ff004d; object-fit: cover; background: #333; flex-shrink: 0; }
         
         .msg { padding: 10px 14px; border-radius: 18px; font-size: 14px; line-height: 1.4; word-wrap: break-word; }
         .mine .msg { background: #ff004d; color: white; border-bottom-right-radius: 2px; }
@@ -33,9 +27,9 @@
         
         .input-area { display: flex; gap: 10px; align-items: center; margin-top: 15px; background: #1a1a1a; padding: 8px 12px; border-radius: 25px; }
         input { flex: 1; padding: 5px; border: none; background: transparent; color: #fff; outline: none; font-size: 15px; }
-        .file-label { cursor: pointer; font-size: 22px; transition: 0.2s; opacity: 0.8; }
+        .file-label { cursor: pointer; font-size: 22px; opacity: 0.8; }
         #avatarInput { display: none; }
-        .send-btn { background: #ff004d; color: #fff; border: none; border-radius: 50%; width: 35px; height: 35px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .send-btn { background: #ff004d; color: #fff; border: none; border-radius: 50%; width: 35px; height: 35px; cursor: pointer; font-weight: bold; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
 <body>
@@ -47,13 +41,13 @@
     <div class="card">
         <div class="header">
             <div class="logo">ЧАТ ДЛЯ ВАС!</div>
-            <label class="file-label">✈️<input type="file" id="avatarInput" accept="image/*"></label>
+            <label class="file-label" title="Выбрать аву">✈️<input type="file" id="avatarInput" accept="image/*"></label>
         </div>
         <div id="chatBox"></div>
         <div class="input-area">
             <img id="myCurrentAv" src="https://pravatar.cc" class="current-user-av">
             <input type="text" id="chatInput" placeholder="Напишите..." autocomplete="off">
-            <button class="send-btn" id="sendBtn">➤</button>
+            <button class="send-btn" id="finalSendBtn">➤</button>
         </div>
     </div>
 
@@ -61,66 +55,69 @@
     import { initializeApp } from "https://gstatic.com";
     import { getDatabase, ref, push, onChildAdded, serverTimestamp } from "https://gstatic.com";
 
-    // ТВОЯ БАЗА
-    const firebaseConfig = { databaseURL: "https://slapya-tv-default-rtdb.firebaseio.com/" };
+    const firebaseConfig = { databaseURL: "https://firebaseio.com" };
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
     const messagesRef = ref(db, 'messages');
 
-    const userId = localStorage.getItem('userId') || Math.random().toString(36).substring(7);
+    const userId = localStorage.getItem('userId') || 'user_' + Math.random().toString(36).substr(2, 9);
     localStorage.setItem('userId', userId);
     
     let userAvatar = localStorage.getItem('userAvatar') || 'https://pravatar.cc';
     document.getElementById('myCurrentAv').src = userAvatar;
 
-    // СЖАТИЕ И УСТАНОВКА АВАТАРКИ
-    document.getElementById('avatarInput').addEventListener('change', function(e) {
+    // Смена и сжатие аватарки
+    document.getElementById('avatarInput').onchange = (e) => {
         const file = e.target.files[0];
         if (!file) return;
         const reader = new FileReader();
-        reader.onload = (event) => {
+        reader.onload = (ev) => {
             const img = new Image();
+            img.src = ev.target.result;
             img.onload = () => {
                 const canvas = document.createElement('canvas');
-                canvas.width = 100; canvas.height = 100;
-                canvas.getContext('2d').drawImage(img, 0, 0, 100, 100);
-                userAvatar = canvas.toDataURL('image/jpeg', 0.7);
+                canvas.width = 80; canvas.height = 80;
+                canvas.getContext('2d').drawImage(img, 0, 0, 80, 80);
+                userAvatar = canvas.toDataURL('image/jpeg', 0.6);
                 localStorage.setItem('userAvatar', userAvatar);
                 document.getElementById('myCurrentAv').src = userAvatar;
+                alert("Аватарка установлена!");
             };
-            img.src = event.target.result;
         };
         reader.readAsDataURL(file);
-    });
+    };
 
-    // ФУНКЦИЯ ОТПРАВКИ
-    window.sendMsg = function() {
+    // Функция отправки
+    const doSend = () => {
         const input = document.getElementById('chatInput');
         const text = input.value.trim();
         if (!text) return;
-        
-        push(messagesRef, { 
-            userId: userId, 
-            avatar: userAvatar, 
-            text: text, 
-            timestamp: serverTimestamp() 
+
+        push(messagesRef, {
+            u: userId,
+            a: userAvatar,
+            t: text,
+            s: serverTimestamp()
         }).then(() => {
             input.value = "";
-        }).catch(err => alert("Ошибка! Проверь интернет или Rules в Firebase."));
-    }
+        }).catch(err => {
+            alert("ОШИБКА: База Firebase отклонила сообщение. Проверь вкладку Rules!");
+            console.error(err);
+        });
+    };
 
-    document.getElementById('sendBtn').onclick = sendMsg;
-    document.getElementById('chatInput').onkeypress = (e) => { if(e.key === 'Enter') sendMsg(); };
+    document.getElementById('finalSendBtn').onclick = doSend;
+    document.getElementById('chatInput').onkeydown = (e) => { if(e.key === 'Enter') doSend(); };
 
-    // ЗАГРУЗКА СООБЩЕНИЙ
-    onChildAdded(messagesRef, (data) => {
-        const msg = data.val();
-        const isMine = msg.userId === userId;
-        const wrapper = document.createElement('div');
-        wrapper.className = `msg-wrapper ${isMine ? 'mine' : 'others'}`;
-        wrapper.innerHTML = `<img src="${msg.avatar}" class="avatar"><div class="msg">${msg.text}</div>`;
+    // Загрузка сообщений
+    onChildAdded(messagesRef, (snap) => {
+        const m = snap.val();
+        const isMine = m.u === userId;
+        const wrap = document.createElement('div');
+        wrap.className = `msg-wrapper ${isMine ? 'mine' : 'others'}`;
+        wrap.innerHTML = `<img src="${m.a}" class="avatar"><div class="msg">${m.t}</div>`;
         const box = document.getElementById('chatBox');
-        box.appendChild(wrapper);
+        box.appendChild(wrap);
         box.scrollTop = box.scrollHeight;
     });
 </script>
