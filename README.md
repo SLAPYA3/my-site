@@ -8,7 +8,7 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { background: #080808; color: #fff; font-family: sans-serif; margin: 0; padding: 0; overflow: hidden; height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; }
         
-        /* ЮТУБ-АНГЕЛОЧЕК В УГЛУ */
+        /* КНОПКА ЮТУБА С АНГЕЛОЧКОМ ИЗ PINTEREST */
         .top-yt-link { 
             position: fixed; 
             top: 20px; 
@@ -28,14 +28,14 @@
             display: block;
         }
         .yt-status { 
-            width: 15px; height: 15px; 
+            width: 16px; height: 16px; 
             background: #00ff00; 
             border: 2px solid #080808; 
             border-radius: 50%; 
             position: absolute; 
             bottom: 5px; 
             right: 5px; 
-            box-shadow: 0 0 10px #00ff00;
+            box-shadow: 0 0 8px #00ff00;
         }
 
         .card { background: #111; border: 1px solid #222; border-radius: 25px; width: 95%; max-width: 400px; height: 85vh; display: flex; flex-direction: column; padding: 15px; box-shadow: 0 20px 60px rgba(0,0,0,1); position: relative; z-index: 10; }
@@ -61,14 +61,14 @@
         input { flex: 1; padding: 10px; border: none; background: transparent; color: #fff; outline: none; font-size: 15px; }
         .file-btn { cursor: pointer; font-size: 20px; opacity: 0.7; }
         #avatarInput { display: none; }
-        .send-btn { background: #ff004d; color: #fff; border: none; border-radius: 50%; width: 38px; height: 38px; cursor: pointer; font-weight: bold; display: flex; align-items: center; justify-content: center; }
+        .send-btn { background: #ff004d; color: #fff; border: none; border-radius: 50%; width: 38px; height: 38px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
 <body>
 
+    <!-- ССЫЛКА НА ПОСТЫ И ПРЯМОЙ АДРЕС КАРТИНКИ -->
     <a href="https://youtube.com" target="_blank" class="top-yt-link">
-        <!-- Я поставил ссылку на картинку через сервис, который точно не блочит гитхаб -->
-        <img src="https://postimg.cc" class="yt-img" alt="YT">
+        <img src="https://pinimg.com" class="yt-img" alt="YT">
         <div class="yt-status"></div>
     </a>
 
@@ -79,7 +79,7 @@
         </div>
         <div id="chatBox"></div>
         <div class="input-area">
-            <input type="text" id="chatInput" placeholder="Напишите..." autocomplete="off">
+            <input type="text" id="chatInput" placeholder="Напишите сообщение..." autocomplete="off">
             <button class="send-btn" onclick="send()">➤</button>
         </div>
     </div>
@@ -88,7 +88,7 @@
     import { initializeApp } from "https://gstatic.com";
     import { getDatabase, ref, push, onChildAdded, serverTimestamp } from "https://gstatic.com";
 
-    const firebaseConfig = { databaseURL: "https://slapya-tv-default-rtdb.firebaseio.com/" };
+    const firebaseConfig = { databaseURL: "https://firebaseio.com" };
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
     const messagesRef = ref(db, 'messages');
@@ -133,6 +133,7 @@
 </script>
 </body>
 </html>
+
 
 
 
