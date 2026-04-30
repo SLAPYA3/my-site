@@ -17,10 +17,11 @@
         .logo { font-size: 18px; font-weight: 900; color: #ff004d; text-transform: uppercase; }
         
         #chatBox { flex: 1; overflow-y: auto; background: #050505; border-radius: 18px; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
-        .msg-wrapper { display: flex; align-items: flex-end; gap: 8px; max-width: 85%; animation: fadeIn 0.2s ease; }
+        .msg-wrapper { display: flex; align-items: flex-end; gap: 8px; max-width: 85%; }
         .msg-wrapper.mine { flex-direction: row-reverse; align-self: flex-end; }
         
-        .avatar, .current-user-av { width: 35px; height: 35px; border-radius: 50%; border: 1.5px solid #ff004d; object-fit: cover; background: #333; flex-shrink: 0; }
+        /* ГАРАНТИРУЕМ ОТОБРАЖЕНИЕ АВАТАРОК */
+        .avatar, .current-user-av { width: 35px; height: 35px; border-radius: 50%; border: 1.5px solid #ff004d !important; object-fit: cover; background: #333; flex-shrink: 0; display: block !important; visibility: visible !important; opacity: 1 !important; }
         
         .msg { padding: 10px 14px; border-radius: 18px; font-size: 14px; line-height: 1.4; }
         .mine .msg { background: #ff004d; color: white; border-bottom-right-radius: 2px; }
@@ -36,7 +37,7 @@
 <body>
 
     <a href="https://youtube.com" target="_blank" class="top-yt-link">
-        <img src="yt.jpg" onerror="this.src='https://pravatar.cc'" class="yt-img">
+        <img src="https://pinimg.com" class="yt-img">
     </a>
 
     <div class="card">
@@ -46,7 +47,7 @@
         </div>
         <div id="chatBox"></div>
         <div class="input-area">
-            <img id="myCurrentAv" src="" class="current-user-av">
+            <img id="myCurrentAv" src="https://pravatar.cc" class="current-user-av">
             <input type="text" id="chatInput" placeholder="Напишите..." autocomplete="off">
             <button class="send-btn" onclick="send()">➤</button>
         </div>
@@ -64,43 +65,46 @@
     const userId = localStorage.getItem('userId') || Math.random().toString(36).substring(7);
     localStorage.setItem('userId', userId);
     
-    let userAvatar = localStorage.getItem('userAvatar') || 'https://pravatar.cc' + userId;
+    // ПРОВЕРКА СОХРАНЕННОЙ АВЫ ПРИ ЗАГРУЗКЕ
+    let userAvatar = localStorage.getItem('userAvatar') || 'https://pravatar.cc';
     const myImgDisplay = document.getElementById('myCurrentAv');
     myImgDisplay.src = userAvatar;
 
-    // ФУНКЦИЯ СЖАТИЯ КАРТИНКИ
-    function resizeImage(file, callback) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const img = new Image();
-            img.onload = () => {
-                const canvas = document.createElement('canvas');
-                const MAX_SIZE = 100; // Размер иконки
-                let width = img.width, height = img.height;
-                if (width > height) { if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; } }
-                else { if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; } }
-                canvas.width = width; canvas.height = height;
-                canvas.getContext('2d').drawImage(img, 0, 0, width, height);
-                callback(canvas.toDataURL('image/jpeg', 0.7)); // 0.7 - качество
-            };
-            img.src = e.target.result;
-        };
-        reader.readAsDataURL(file);
-    }
-
+    // ОБРАБОТКА ВЫБОРА ФОТО
     document.getElementById('avatarInput').addEventListener('change', function(e) {
-        if (!e.target.files[0]) return;
-        resizeImage(e.target.files[0], (resizedData) => {
-            userAvatar = resizedData;
-            localStorage.setItem('userAvatar', userAvatar);
-            myImgDisplay.src = userAvatar;
-        });
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (event) => {
+            const tempImg = new Image();
+            tempImg.src = event.target.result;
+            tempImg.onload = () => {
+                const canvas = document.createElement('canvas');
+                const size = 100; // Фиксированный размер для памяти
+                canvas.width = size;
+                canvas.height = size;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(tempImg, 0, 0, size, size);
+                
+                const finalData = canvas.toDataURL('image/jpeg', 0.8);
+                userAvatar = finalData;
+                localStorage.setItem('userAvatar', finalData);
+                myImgDisplay.src = finalData; // Мгновенно обновляем
+            };
+        };
     });
 
     window.send = function() {
         const input = document.getElementById('chatInput');
         if (!input.value.trim()) return;
-        push(messagesRef, { userId, avatar: userAvatar, text: input.value, timestamp: serverTimestamp() });
+        push(messagesRef, { 
+            userId: userId, 
+            avatar: userAvatar, 
+            text: input.value, 
+            timestamp: serverTimestamp() 
+        });
         input.value = "";
     };
 
@@ -109,9 +113,16 @@
         const isMine = msg.userId === userId;
         const wrapper = document.createElement('div');
         wrapper.className = `msg-wrapper ${isMine ? 'mine' : 'others'}`;
-        wrapper.innerHTML = `<img src="${msg.avatar || 'https://pravatar.cc'}" class="avatar"><div class="msg">${msg.text}</div>`;
-        document.getElementById('chatBox').appendChild(wrapper);
-        document.getElementById('chatBox').scrollTop = document.getElementById('chatBox').scrollHeight;
+        
+        const avatarSrc = msg.avatar || 'https://pravatar.cc';
+        
+        wrapper.innerHTML = `
+            <img src="${avatarSrc}" class="avatar">
+            <div class="msg">${msg.text}</div>
+        `;
+        const chatBox = document.getElementById('chatBox');
+        chatBox.appendChild(wrapper);
+        chatBox.scrollTop = chatBox.scrollHeight;
     });
 </script>
 </body>
