@@ -8,22 +8,23 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { background: #080808; color: #fff; font-family: sans-serif; margin: 0; padding: 0; overflow: hidden; height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; }
         
-        .top-yt-link { position: absolute; top: 20px; right: 20px; text-decoration: none; z-index: 100; transition: 0.3s; }
+        /* КНОПКА ЮТУБА (АНГЕЛОЧЕК) В УГЛУ */
+        .top-yt-link { position: fixed; top: 20px; right: 20px; text-decoration: none; z-index: 9999; transition: 0.3s; }
         .top-yt-link:hover { transform: scale(1.1); filter: drop-shadow(0 0 15px #ff004d); }
-        .yt-img { width: 60px; height: 60px; border-radius: 50%; border: 3px solid #ff004d; object-fit: cover; background: #222; }
+        .yt-img { width: 65px; height: 65px; border-radius: 50%; border: 3px solid #ff004d; object-fit: cover; background: #222; display: block; }
+        .yt-status { width: 14px; height: 14px; background: #00ff00; border: 2px solid #080808; border-radius: 50%; position: absolute; bottom: 4px; right: 4px; box-shadow: 0 0 10px #00ff00; }
 
         .card { background: #111; border: 1px solid #222; border-radius: 25px; width: 95%; max-width: 400px; height: 85vh; display: flex; flex-direction: column; padding: 15px; box-shadow: 0 20px 60px rgba(0,0,0,1); position: relative; }
         .header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px solid #1a1a1a; margin-bottom: 10px; }
         .logo { font-size: 18px; font-weight: 900; color: #ff004d; text-transform: uppercase; }
         
         #chatBox { flex: 1; overflow-y: auto; background: #050505; border-radius: 18px; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
-        .msg-wrapper { display: flex; align-items: flex-end; gap: 8px; max-width: 85%; }
+        .msg-wrapper { display: flex; align-items: flex-end; gap: 8px; max-width: 85%; animation: fadeIn 0.2s ease; }
         .msg-wrapper.mine { flex-direction: row-reverse; align-self: flex-end; }
         
-        /* ГАРАНТИРУЕМ ОТОБРАЖЕНИЕ АВАТАРОК */
-        .avatar, .current-user-av { width: 35px; height: 35px; border-radius: 50%; border: 1.5px solid #ff004d !important; object-fit: cover; background: #333; flex-shrink: 0; display: block !important; visibility: visible !important; opacity: 1 !important; }
+        .avatar, .current-user-av { width: 35px; height: 35px; border-radius: 50%; border: 1.5px solid #ff004d !important; object-fit: cover; background: #333; flex-shrink: 0; display: block !important; }
         
-        .msg { padding: 10px 14px; border-radius: 18px; font-size: 14px; line-height: 1.4; }
+        .msg { padding: 10px 14px; border-radius: 18px; font-size: 14px; line-height: 1.4; word-wrap: break-word; }
         .mine .msg { background: #ff004d; color: white; border-bottom-right-radius: 2px; }
         .others .msg { background: #1a1a1a; color: #eee; border-bottom-left-radius: 2px; border: 1px solid #222; }
         
@@ -37,7 +38,9 @@
 <body>
 
     <a href="https://youtube.com" target="_blank" class="top-yt-link">
-        <img src="https://pinimg.com" class="yt-img">
+        <!-- ТУТ ТВОЙ АНГЕЛОЧЕК (ТЕПЕРЬ ОН ЧАСТЬ КОДА) -->
+        <img src="https://postimg.cc" class="yt-img">
+        <div class="yt-status"></div>
     </a>
 
     <div class="card">
@@ -65,69 +68,49 @@
     const userId = localStorage.getItem('userId') || Math.random().toString(36).substring(7);
     localStorage.setItem('userId', userId);
     
-    // ПРОВЕРКА СОХРАНЕННОЙ АВЫ ПРИ ЗАГРУЗКЕ
     let userAvatar = localStorage.getItem('userAvatar') || 'https://pravatar.cc';
-    const myImgDisplay = document.getElementById('myCurrentAv');
-    myImgDisplay.src = userAvatar;
+    document.getElementById('myCurrentAv').src = userAvatar;
 
-    // ОБРАБОТКА ВЫБОРА ФОТО
     document.getElementById('avatarInput').addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (!file) return;
-
         const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = (event) => {
-            const tempImg = new Image();
-            tempImg.src = event.target.result;
-            tempImg.onload = () => {
+        reader.onload = (ev) => {
+            const img = new Image();
+            img.src = ev.target.result;
+            img.onload = () => {
                 const canvas = document.createElement('canvas');
-                const size = 100; // Фиксированный размер для памяти
-                canvas.width = size;
-                canvas.height = size;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(tempImg, 0, 0, size, size);
-                
-                const finalData = canvas.toDataURL('image/jpeg', 0.8);
-                userAvatar = finalData;
-                localStorage.setItem('userAvatar', finalData);
-                myImgDisplay.src = finalData; // Мгновенно обновляем
+                canvas.width = 100; canvas.height = 100;
+                canvas.getContext('2d').drawImage(img, 0, 0, 100, 100);
+                userAvatar = canvas.toDataURL('image/jpeg', 0.8);
+                localStorage.setItem('userAvatar', userAvatar);
+                document.getElementById('myCurrentAv').src = userAvatar;
             };
         };
+        reader.readAsDataURL(file);
     });
 
     window.send = function() {
         const input = document.getElementById('chatInput');
         if (!input.value.trim()) return;
-        push(messagesRef, { 
-            userId: userId, 
-            avatar: userAvatar, 
-            text: input.value, 
-            timestamp: serverTimestamp() 
-        });
+        push(messagesRef, { userId, avatar: userAvatar, text: input.value, timestamp: serverTimestamp() });
         input.value = "";
     };
+
+    document.getElementById('chatInput').addEventListener('keypress', (e) => { if(e.key === 'Enter') send(); });
 
     onChildAdded(messagesRef, (data) => {
         const msg = data.val();
         const isMine = msg.userId === userId;
         const wrapper = document.createElement('div');
         wrapper.className = `msg-wrapper ${isMine ? 'mine' : 'others'}`;
-        
-        const avatarSrc = msg.avatar || 'https://pravatar.cc';
-        
-        wrapper.innerHTML = `
-            <img src="${avatarSrc}" class="avatar">
-            <div class="msg">${msg.text}</div>
-        `;
-        const chatBox = document.getElementById('chatBox');
-        chatBox.appendChild(wrapper);
-        chatBox.scrollTop = chatBox.scrollHeight;
+        wrapper.innerHTML = `<img src="${msg.avatar}" class="avatar"><div class="msg">${msg.text}</div>`;
+        document.getElementById('chatBox').appendChild(wrapper);
+        document.getElementById('chatBox').scrollTop = document.getElementById('chatBox').scrollHeight;
     });
 </script>
 </body>
 </html>
-
 
 
 
