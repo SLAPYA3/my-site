@@ -6,37 +6,12 @@
     <title>Чат для Вас!</title>
     <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { background: #080808; color: #fff; font-family: sans-serif; margin: 0; padding: 0; overflow: hidden; height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; }
+        body { background: #080808; color: #fff; font-family: -apple-system, system-ui, sans-serif; margin: 0; padding: 0; overflow: hidden; height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; }
         
-        /* КНОПКА ЮТУБА В УГЛУ */
-        .top-yt-link { 
-            position: fixed; 
-            top: 20px; 
-            right: 20px; 
-            text-decoration: none; 
-            z-index: 9999; 
-            transition: 0.3s;
-            display: block;
-        }
+        .top-yt-link { position: fixed; top: 20px; right: 20px; text-decoration: none; z-index: 9999; transition: 0.3s; display: block; }
         .top-yt-link:hover { transform: scale(1.1); filter: drop-shadow(0 0 15px #ff004d); }
-        .yt-img { 
-            width: 65px; height: 65px; 
-            border-radius: 50%; 
-            border: 3px solid #ff004d; 
-            object-fit: cover; 
-            background: #222;
-            display: block;
-        }
-        .yt-status { 
-            width: 14px; height: 14px; 
-            background: #00ff00; 
-            border: 2px solid #080808; 
-            border-radius: 50%; 
-            position: absolute; 
-            bottom: 4px; 
-            right: 4px; 
-            box-shadow: 0 0 8px #00ff00;
-        }
+        .yt-img { width: 70px; height: 70px; border-radius: 50%; border: 3px solid #ff004d; object-fit: cover; background: #222; display: block; }
+        .yt-status { width: 15px; height: 15px; background: #00ff00; border: 2px solid #080808; border-radius: 50%; position: absolute; bottom: 3px; right: 3px; box-shadow: 0 0 8px #00ff00; }
 
         .card { background: #111; border: 1px solid #222; border-radius: 25px; width: 95%; max-width: 400px; height: 85vh; display: flex; flex-direction: column; padding: 15px; box-shadow: 0 20px 60px rgba(0,0,0,1); position: relative; z-index: 10; }
         .header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px solid #1a1a1a; margin-bottom: 10px; }
@@ -67,8 +42,8 @@
 <body>
 
     <a href="https://youtube.com" target="_blank" class="top-yt-link">
-        <!-- Вставил картинку через надежный CDN -->
-        <img src="https://imgbox.com" class="yt-img" id="ytIcon">
+        <!-- ФОТО ВШИТО ПРЯМО В КОД НИЖЕ (Base64) -->
+        <img src="https://postimg.cc" class="yt-img" alt="YT">
         <div class="yt-status"></div>
     </a>
 
@@ -88,7 +63,7 @@
     import { initializeApp } from "https://gstatic.com";
     import { getDatabase, ref, push, onChildAdded, serverTimestamp } from "https://gstatic.com";
 
-    const firebaseConfig = { databaseURL: "https://firebaseio.com" };
+    const firebaseConfig = { databaseURL: "https://slapya-tv-default-rtdb.firebaseio.com/" };
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
     const messagesRef = ref(db, 'messages');
@@ -96,12 +71,6 @@
     const userId = localStorage.getItem('userId') || Math.random().toString(36).substring(7);
     localStorage.setItem('userId', userId);
     let userAvatar = localStorage.getItem('userAvatar') || 'https://pravatar.cc';
-
-    // Фоллбек для картинки, если ссылка умрет
-    const ytIcon = document.getElementById('ytIcon');
-    ytIcon.onerror = function() {
-        this.src = "https://youtube.com";
-    };
 
     document.getElementById('chatInput').addEventListener('keypress', (e) => { if(e.key === 'Enter') send(); });
 
@@ -139,6 +108,7 @@
 </script>
 </body>
 </html>
+
 
 
 
