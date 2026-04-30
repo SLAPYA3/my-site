@@ -2,13 +2,14 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SLAPYA - HUB</title>
     <style>
         :root { --neon: #ff004d; }
         
-        /* ПОЛНОСТЬЮ УКРЫВАЕМ КУРСОР ВЕЗДЕ */
-        * { box-sizing: border-box; cursor: none !important; } 
+        /* 1. ЖЕСТКОЕ СКРЫТИЕ КУРСОРОВ СРАЗУ */
+        html, body, * { cursor: none !important; } 
 
         body {
             background: #000;
@@ -37,9 +38,10 @@
             box-shadow: 0 0 15px var(--neon);
             transform: translate(-50%, -50%);
             transition: transform 0.05s linear;
+            display: none; /* Появится только при движении */
         }
 
-        .main-container { text-align: center; z-index: 10; }
+        .main-container { text-align: center; z-index: 10; pointer-events: auto; }
         .avatar-main { width: 120px; height: 120px; border-radius: 50%; border: 4px solid var(--neon); box-shadow: 0 0 25px var(--neon); margin-bottom: 10px; }
         h1 { color: #fff; letter-spacing: 5px; text-transform: uppercase; text-shadow: 0 0 10px var(--neon); margin: 0 0 30px 0; }
 
@@ -52,7 +54,6 @@
         .btn:hover { background: var(--neon); box-shadow: 0 0 30px var(--neon); transform: scale(1.05); }
         .btn img { width: 25px; height: 25px; border-radius: 50%; margin-right: 15px; }
 
-        /* КНОПКА ВЫКЛЮЧЕНИЯ МУЗЫКИ */
         #music-toggle {
             position: absolute;
             bottom: 30px;
@@ -66,8 +67,8 @@
             letter-spacing: 2px;
             transition: 0.3s;
             z-index: 20;
+            pointer-events: auto;
         }
-        #music-toggle:hover { background: rgba(255, 0, 77, 0.2); box-shadow: 0 0 10px var(--neon); }
     </style>
 </head>
 <body>
@@ -101,13 +102,14 @@
         const btn = document.getElementById('music-toggle');
         let visualizerStarted = false;
 
-        // Плавный курсор
+        // Показываем ангелочка и двигаем его
         document.addEventListener('mousemove', (e) => {
+            cursor.style.display = 'block';
             cursor.style.left = e.clientX + 'px';
             cursor.style.top = e.clientY + 'px';
         });
 
-        // ВКЛ / ВЫКЛ Музыки
+        // Музыка ВКЛ/ВЫКЛ
         btn.addEventListener('click', () => {
             if (track.paused) {
                 track.play();
@@ -119,7 +121,6 @@
             } else {
                 track.pause();
                 btn.innerText = "Music: OFF";
-                // Возвращаем неон в покой
                 document.body.style.boxShadow = `inset 0 0 30px var(--neon), 0 0 30px var(--neon)`;
             }
         });
