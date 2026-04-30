@@ -8,7 +8,7 @@
     <style>
         :root { --neon: #ff004d; }
         
-        /* ПОЛНОЕ СКРЫТИЕ МЫШИ */
+        /* 1. ЖЕСТКОЕ СКРЫТИЕ КУРСОРОВ */
         html, body, * { cursor: none !important; } 
 
         body {
@@ -40,16 +40,16 @@
             display: none;
         }
 
-        /* ЧАСТИЦЫ ДЫМА */
+        /* ЧАСТИЦЫ ДЫМА (ВАРИАНТ 3) */
         .smoke-particle {
             position: fixed;
             pointer-events: none;
             background: var(--neon);
             border-radius: 50%;
-            filter: blur(10px);
-            opacity: 0.6;
+            filter: blur(12px);
+            opacity: 0.5;
             z-index: 9999;
-            transition: transform 0.5s ease-out, opacity 0.5s ease-out;
+            transition: transform 0.6s ease-out, opacity 0.6s ease-out;
         }
 
         .main-container { text-align: center; z-index: 10; }
@@ -81,9 +81,17 @@
         <img src="yt.jpg" class="avatar-main">
         <h1>SLAPYA</h1>
         <div class="links-wrap">
-            <a href="https://youtube.com" target="_blank" class="btn"><img src="yt.jpg"> YOUTUBE</a>
-            <a href="https://t.me" target="_blank" class="btn"><img src="yt.jpg"> TELEGRAM</a>
-            <a href="https://tiktok.com" target="_blank" class="btn"><img src="yt.jpg"> TIKTOK</a>
+            <!-- ТВОЙ ЮТУБ -->
+            <a href="https://youtube.com" target="_blank" class="btn">
+                <img src="yt.jpg"> YOUTUBE
+            </a>
+            <!-- ОСТАЛЬНЫЕ ССЫЛКИ -->
+            <a href="https://t.me" target="_blank" class="btn">
+                <img src="yt.jpg" style="opacity: 0.5;"> TELEGRAM
+            </a>
+            <a href="https://tiktok.com" target="_blank" class="btn">
+                <img src="yt.jpg" style="opacity: 0.5;"> TIKTOK
+            </a>
         </div>
     </div>
 
@@ -95,7 +103,7 @@
         const btn = document.getElementById('music-toggle');
         let smokeIntensity = 1;
 
-        // ДВИЖЕНИЕ И ДЫМ
+        // ДЫМНЫЙ СЛЕД
         document.addEventListener('mousemove', (e) => {
             cursor.style.display = 'block';
             cursor.style.left = e.clientX + 'px';
@@ -106,26 +114,22 @@
         function createSmoke(x, y) {
             const p = document.createElement('div');
             p.className = 'smoke-particle';
-            const size = Math.random() * 20 + 10;
+            const size = Math.random() * 25 + 15;
             p.style.width = size + 'px';
             p.style.height = size + 'px';
-            p.style.left = x + 'px';
-            p.style.top = y + 'px';
-            
-            // Если играет музыка, дым становится ярче
-            p.style.opacity = 0.4 * smokeIntensity;
-            
+            p.style.left = (x - size/2) + 'px';
+            p.style.top = (y - size/2) + 'px';
+            p.style.opacity = 0.5 * smokeIntensity;
             document.body.appendChild(p);
 
             setTimeout(() => {
-                p.style.transform = `scale(3) translate(${(Math.random()-0.5)*50}px, ${(Math.random()-0.5)*50}px)`;
+                p.style.transform = `scale(4) translate(${(Math.random()-0.5)*60}px, ${(Math.random()-0.5)*60}px)`;
                 p.style.opacity = '0';
             }, 10);
-
-            setTimeout(() => { p.remove(); }, 600);
+            setTimeout(() => { p.remove(); }, 700);
         }
 
-        // МУЗЫКА
+        // МУЗЫКА И ПУЛЬСАЦИЯ
         btn.addEventListener('click', () => {
             if (track.paused) {
                 track.play();
@@ -135,6 +139,7 @@
                 track.pause();
                 btn.innerText = "Music: OFF";
                 smokeIntensity = 1;
+                document.body.style.boxShadow = `inset 0 0 30px var(--neon), 0 0 30px var(--neon)`;
             }
         });
 
@@ -150,9 +155,10 @@
                 if (!track.paused) {
                     ans.getByteFrequencyData(data);
                     let avg = data.reduce((a, b) => a + b) / data.length;
-                    smokeIntensity = 1 + (avg / 50); // Увеличиваем плотность дыма под бит
-                    let glow = 15 + (avg / 2);
+                    smokeIntensity = 1 + (avg / 40); 
+                    let glow = 15 + (avg / 1.5);
                     document.body.style.boxShadow = `inset 0 0 ${glow*2}px var(--neon), 0 0 ${glow*2}px var(--neon)`;
+                    document.body.style.borderWidth = `${5 + glow/15}px`;
                 }
                 requestAnimationFrame(frame);
             }
