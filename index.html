@@ -4,38 +4,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Чат для Вас!</title>
+    
+    <!-- ПОДКЛЮЧАЕМ FIREBASE КЛАССИЧЕСКИМ СПОСОБОМ (COMPAT) -->
+    <script src="https://gstatic.com"></script>
+    <script src="https://gstatic.com"></script>
+
     <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { background: #080808; color: #fff; font-family: sans-serif; margin: 0; padding: 0; overflow: hidden; height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; }
         
-        /* ЮТУБ-АНГЕЛОЧЕК В УГЛУ */
         .top-yt-link { position: absolute; top: 20px; right: 20px; text-decoration: none; z-index: 9999; transition: 0.3s; }
-        .top-yt-link:hover { transform: scale(1.1); filter: drop-shadow(0 0 10px #ff004d); }
-        .yt-img { width: 65px; height: 65px; border-radius: 50%; border: 3px solid #ff004d; object-fit: cover; background: #222; }
+        .yt-img { width: 60px; height: 60px; border-radius: 50%; border: 2px solid #ff004d; object-fit: cover; background: #222; }
 
-        .card { background: #111; border: 1px solid #222; border-radius: 25px; width: 95%; max-width: 420px; height: 85vh; display: flex; flex-direction: column; padding: 15px; box-shadow: 0 20px 60px rgba(0,0,0,1); position: relative; z-index: 10; }
+        .card { background: #111; border: 1px solid #222; border-radius: 25px; width: 95%; max-width: 420px; height: 85vh; display: flex; flex-direction: column; padding: 15px; box-shadow: 0 20px 60px rgba(0,0,0,1); }
         .header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px solid #1a1a1a; margin-bottom: 10px; }
         .logo { font-size: 18px; font-weight: 900; color: #ff004d; text-transform: uppercase; }
         
-        #status-dot { width: 10px; height: 10px; background: red; border-radius: 50%; display: inline-block; margin-right: 5px; box-shadow: 0 0 5px red; }
+        #status-dot { width: 10px; height: 10px; background: red; border-radius: 50%; display: inline-block; margin-right: 5px; box-shadow: 0 0 5px red; transition: 0.5s; }
 
         #chatBox { flex: 1; overflow-y: auto; background: #050505; border-radius: 18px; padding: 12px; display: flex; flex-direction: column; gap: 10px; scroll-behavior: smooth; }
-        #chatBox::-webkit-scrollbar { width: 4px; }
-        #chatBox::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
-
-        .msg-wrapper { display: flex; align-items: flex-end; gap: 8px; max-width: 85%; animation: fadeIn 0.2s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .msg-wrapper { display: flex; align-items: flex-end; gap: 8px; max-width: 85%; }
         .msg-wrapper.mine { flex-direction: row-reverse; align-self: flex-end; }
         
-        .avatar, .current-user-av { width: 35px; height: 35px; border-radius: 50%; border: 1.5px solid #ff004d !important; object-fit: cover; background: #333; flex-shrink: 0; display: block; }
-        
+        .avatar, .current-user-av { width: 35px; height: 35px; border-radius: 50%; border: 1.5px solid #ff004d; object-fit: cover; background: #333; flex-shrink: 0; }
         .msg { padding: 10px 14px; border-radius: 18px; font-size: 14px; line-height: 1.4; word-wrap: break-word; }
         .mine .msg { background: #ff004d; color: white; border-bottom-right-radius: 2px; }
         .others .msg { background: #1a1a1a; color: #eee; border-bottom-left-radius: 2px; border: 1px solid #222; }
         
         .input-area { display: flex; gap: 10px; align-items: center; margin-top: 15px; background: #1a1a1a; padding: 8px 12px; border-radius: 25px; }
         input { flex: 1; padding: 5px; border: none; background: transparent; color: #fff; outline: none; font-size: 15px; }
-        .file-label { cursor: pointer; font-size: 22px; transition: 0.2s; }
+        .file-label { cursor: pointer; font-size: 22px; }
         #avatarInput { display: none; }
         .send-btn { background: #ff004d; color: #fff; border: none; border-radius: 50%; width: 35px; height: 35px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
     </style>
@@ -57,16 +55,13 @@
         <div id="chatBox"></div>
         <div class="input-area">
             <img id="myCurrentAv" src="https://pravatar.cc" class="current-user-av">
-            <input type="text" id="chatInput" placeholder="Напишите..." autocomplete="off">
+            <input type="text" id="chatInput" placeholder="Напишите...">
             <button class="send-btn" id="sendBtn">➤</button>
         </div>
     </div>
 
-<script type="module">
-    import { initializeApp } from "https://gstatic.com";
-    import { getDatabase, ref, push, onChildAdded, onValue } from "https://gstatic.com";
-
-    // ДАННЫЕ С ТВОЕГО СКРИНШОТА
+<script>
+    // КОНФИГ ИЗ ТВОЕГО СКРИНШОТА
     const firebaseConfig = {
         apiKey: "AIzaSyBCuF9Eeu4Imh8kzHto2rNor-P_bgjpeWU",
         authDomain: "://firebaseapp.com",
@@ -74,17 +69,16 @@
         projectId: "slapya-tv",
         storageBucket: "slapya-tv.firebasestorage.app",
         messagingSenderId: "136766849891",
-        appId: "1:136766849891:web:deba1aac85e51e6e4894f6",
-        measurementId: "G-WY7VQPQ3LY"
+        appId: "1:136766849891:web:deba1aac85e51e6e4894f6"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-    const messagesRef = ref(db, 'messages');
+    // Инициализация
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const messagesRef = db.ref('messages');
 
     // Проверка соединения
-    const connectedRef = ref(db, ".info/connected");
-    onValue(connectedRef, (snap) => {
+    db.ref(".info/connected").on("value", (snap) => {
         const dot = document.getElementById('status-dot');
         if (snap.val() === true) {
             dot.style.background = "lime";
@@ -101,52 +95,56 @@
     let userAvatar = localStorage.getItem('userAvatar') || 'https://pravatar.cc';
     document.getElementById('myCurrentAv').src = userAvatar;
 
-    // Сжатие фото
-    document.getElementById('avatarInput').addEventListener('change', function(e) {
+    // Смена авы
+    document.getElementById('avatarInput').onchange = function(e) {
         const file = e.target.files[0];
         if (!file) return;
         const reader = new FileReader();
-        reader.onload = (event) => {
+        reader.onload = (ev) => {
             const img = new Image();
-            img.src = event.target.result;
+            img.src = ev.target.result;
             img.onload = () => {
                 const canvas = document.createElement('canvas');
-                canvas.width = 80; canvas.height = 80;
-                canvas.getContext('2d').drawImage(img, 0, 0, 80, 80);
-                userAvatar = canvas.toDataURL('image/jpeg', 0.6);
+                canvas.width = 70; canvas.height = 70;
+                canvas.getContext('2d').drawImage(img, 0, 0, 70, 70);
+                userAvatar = canvas.toDataURL('image/jpeg', 0.5);
                 localStorage.setItem('userAvatar', userAvatar);
                 document.getElementById('myCurrentAv').src = userAvatar;
             };
         };
         reader.readAsDataURL(file);
-    });
+    };
 
-    const sendMsg = () => {
+    // Функция отправки
+    function send() {
         const input = document.getElementById('chatInput');
         const text = input.value.trim();
         if (!text) return;
         
-        push(messagesRef, { 
-            u: userId, 
-            a: userAvatar, 
-            t: text, 
-            ts: Date.now() 
+        messagesRef.push({
+            u: userId,
+            a: userAvatar,
+            t: text,
+            ts: Date.now()
         }).then(() => {
             input.value = "";
-        }).catch(err => alert("Ошибка! Проверь вкладку Rules в Firebase."));
-    };
+        }).catch(err => {
+            alert("ОШИБКА: База блокирует доступ. Проверь Rules!");
+        });
+    }
 
-    document.getElementById('sendBtn').onclick = sendMsg;
-    document.getElementById('chatInput').onkeypress = (e) => { if(e.key === 'Enter') sendMsg(); };
+    document.getElementById('sendBtn').onclick = send;
+    document.getElementById('chatInput').onkeypress = (e) => { if(e.key === 'Enter') send(); };
 
-    onChildAdded(messagesRef, (snap) => {
+    // Загрузка сообщений
+    messagesRef.limitToLast(50).on('child_added', (snap) => {
         const m = snap.val();
         const isMine = m.u === userId;
-        const wrapper = document.createElement('div');
-        wrapper.className = `msg-wrapper ${isMine ? 'mine' : 'others'}`;
-        wrapper.innerHTML = `<img src="${m.a}" class="avatar"><div class="msg">${m.t}</div>`;
+        const wrap = document.createElement('div');
+        wrap.className = 'msg-wrapper ' + (isMine ? 'mine' : 'others');
+        wrap.innerHTML = `<img src="${m.a}" class="avatar"><div class="msg">${m.t}</div>`;
         const box = document.getElementById('chatBox');
-        box.appendChild(wrapper);
+        box.appendChild(wrap);
         box.scrollTop = box.scrollHeight;
     });
 </script>
