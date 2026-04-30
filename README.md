@@ -6,7 +6,7 @@
     <title>Чат для Вас!</title>
     <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { background: #080808; color: #fff; font-family: -apple-system, system-ui, sans-serif; margin: 0; padding: 0; overflow: hidden; height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; }
+        body { background: #080808; color: #fff; font-family: sans-serif; margin: 0; padding: 0; overflow: hidden; height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; }
         
         .top-yt-link { position: fixed; top: 20px; right: 20px; text-decoration: none; z-index: 9999; transition: 0.3s; display: block; }
         .top-yt-link:hover { transform: scale(1.1); filter: drop-shadow(0 0 15px #ff004d); }
@@ -14,8 +14,8 @@
         .yt-status { width: 15px; height: 15px; background: #00ff00; border: 2px solid #080808; border-radius: 50%; position: absolute; bottom: 3px; right: 3px; box-shadow: 0 0 8px #00ff00; }
 
         .card { background: #111; border: 1px solid #222; border-radius: 25px; width: 95%; max-width: 400px; height: 85vh; display: flex; flex-direction: column; padding: 15px; box-shadow: 0 20px 60px rgba(0,0,0,1); position: relative; z-index: 10; }
-        .header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px solid #1a1a1a; margin-bottom: 10px; }
         .logo { font-size: 18px; font-weight: 900; color: #ff004d; text-transform: uppercase; letter-spacing: 1px; }
+        .header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px solid #1a1a1a; margin-bottom: 10px; }
         
         #chatBox { flex: 1; overflow-y: auto; background: #050505; border-radius: 18px; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
         #chatBox::-webkit-scrollbar { width: 4px; }
@@ -42,7 +42,7 @@
 <body>
 
     <a href="https://youtube.com" target="_blank" class="top-yt-link">
-        <!-- ФОТО ВШИТО ПРЯМО В КОД НИЖЕ (Base64) -->
+        <!-- ФОТО ТЕПЕРЬ ВШИТО ПРЯМО В КОД (Base64) -->
         <img src="https://postimg.cc" class="yt-img" alt="YT">
         <div class="yt-status"></div>
     </a>
@@ -54,7 +54,7 @@
         </div>
         <div id="chatBox"></div>
         <div class="input-area">
-            <input type="text" id="chatInput" placeholder="Напишите сообщение..." autocomplete="off">
+            <input type="text" id="chatInput" placeholder="Напишите..." autocomplete="off">
             <button class="send-btn" onclick="send()">➤</button>
         </div>
     </div>
@@ -81,7 +81,6 @@
         reader.onload = function(event) {
             userAvatar = event.target.result;
             localStorage.setItem('userAvatar', userAvatar);
-            alert("Аватарка обновлена!");
         };
         reader.readAsDataURL(file);
     });
@@ -108,6 +107,7 @@
 </script>
 </body>
 </html>
+
 
 
 
