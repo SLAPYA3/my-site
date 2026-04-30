@@ -8,14 +8,39 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { background: #080808; color: #fff; font-family: sans-serif; margin: 0; padding: 0; overflow: hidden; height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; }
         
-        .top-yt-link { position: fixed; top: 20px; right: 20px; text-decoration: none; z-index: 9999; transition: 0.3s; display: block; }
+        /* ЮТУБ-АНГЕЛОЧЕК В УГЛУ */
+        .top-yt-link { 
+            position: fixed; 
+            top: 20px; 
+            right: 20px; 
+            text-decoration: none; 
+            z-index: 9999; 
+            transition: 0.3s;
+            display: block;
+        }
         .top-yt-link:hover { transform: scale(1.1); filter: drop-shadow(0 0 15px #ff004d); }
-        .yt-img { width: 70px; height: 70px; border-radius: 50%; border: 3px solid #ff004d; object-fit: cover; background: #222; display: block; }
-        .yt-status { width: 15px; height: 15px; background: #00ff00; border: 2px solid #080808; border-radius: 50%; position: absolute; bottom: 3px; right: 3px; box-shadow: 0 0 8px #00ff00; }
+        .yt-img { 
+            width: 75px; height: 75px; 
+            border-radius: 50%; 
+            border: 3px solid #ff004d; 
+            object-fit: cover; 
+            background: #222;
+            display: block;
+        }
+        .yt-status { 
+            width: 15px; height: 15px; 
+            background: #00ff00; 
+            border: 2px solid #080808; 
+            border-radius: 50%; 
+            position: absolute; 
+            bottom: 5px; 
+            right: 5px; 
+            box-shadow: 0 0 10px #00ff00;
+        }
 
         .card { background: #111; border: 1px solid #222; border-radius: 25px; width: 95%; max-width: 400px; height: 85vh; display: flex; flex-direction: column; padding: 15px; box-shadow: 0 20px 60px rgba(0,0,0,1); position: relative; z-index: 10; }
-        .logo { font-size: 18px; font-weight: 900; color: #ff004d; text-transform: uppercase; letter-spacing: 1px; }
         .header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px solid #1a1a1a; margin-bottom: 10px; }
+        .logo { font-size: 18px; font-weight: 900; color: #ff004d; text-transform: uppercase; }
         
         #chatBox { flex: 1; overflow-y: auto; background: #050505; border-radius: 18px; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
         #chatBox::-webkit-scrollbar { width: 4px; }
@@ -36,13 +61,13 @@
         input { flex: 1; padding: 10px; border: none; background: transparent; color: #fff; outline: none; font-size: 15px; }
         .file-btn { cursor: pointer; font-size: 20px; opacity: 0.7; }
         #avatarInput { display: none; }
-        .send-btn { background: #ff004d; color: #fff; border: none; border-radius: 50%; width: 38px; height: 38px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .send-btn { background: #ff004d; color: #fff; border: none; border-radius: 50%; width: 38px; height: 38px; cursor: pointer; font-weight: bold; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
 <body>
 
     <a href="https://youtube.com" target="_blank" class="top-yt-link">
-        <!-- ФОТО ТЕПЕРЬ ВШИТО ПРЯМО В КОД (Base64) -->
+        <!-- Я поставил ссылку на картинку через сервис, который точно не блочит гитхаб -->
         <img src="https://postimg.cc" class="yt-img" alt="YT">
         <div class="yt-status"></div>
     </a>
@@ -81,6 +106,7 @@
         reader.onload = function(event) {
             userAvatar = event.target.result;
             localStorage.setItem('userAvatar', userAvatar);
+            alert("Аватарка обновлена!");
         };
         reader.readAsDataURL(file);
     });
@@ -107,6 +133,7 @@
 </script>
 </body>
 </html>
+
 
 
 
