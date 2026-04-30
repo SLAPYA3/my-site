@@ -8,7 +8,7 @@
     <style>
         :root { --neon: #ff004d; }
         
-        /* 1. ЖЕСТКОЕ СКРЫТИЕ КУРСОРОВ СРАЗУ */
+        /* ПОЛНОЕ СКРЫТИЕ МЫШИ */
         html, body, * { cursor: none !important; } 
 
         body {
@@ -31,17 +31,28 @@
             height: 45px;
             position: fixed;
             pointer-events: none;
-            z-index: 9999;
+            z-index: 10000;
             background: url('yt.jpg') center/cover;
             border-radius: 50%;
             border: 2px solid var(--neon);
             box-shadow: 0 0 15px var(--neon);
             transform: translate(-50%, -50%);
-            transition: transform 0.05s linear;
-            display: none; /* Появится только при движении */
+            display: none;
         }
 
-        .main-container { text-align: center; z-index: 10; pointer-events: auto; }
+        /* ЧАСТИЦЫ ДЫМА */
+        .smoke-particle {
+            position: fixed;
+            pointer-events: none;
+            background: var(--neon);
+            border-radius: 50%;
+            filter: blur(10px);
+            opacity: 0.6;
+            z-index: 9999;
+            transition: transform 0.5s ease-out, opacity 0.5s ease-out;
+        }
+
+        .main-container { text-align: center; z-index: 10; }
         .avatar-main { width: 120px; height: 120px; border-radius: 50%; border: 4px solid var(--neon); box-shadow: 0 0 25px var(--neon); margin-bottom: 10px; }
         h1 { color: #fff; letter-spacing: 5px; text-transform: uppercase; text-shadow: 0 0 10px var(--neon); margin: 0 0 30px 0; }
 
@@ -55,42 +66,24 @@
         .btn img { width: 25px; height: 25px; border-radius: 50%; margin-right: 15px; }
 
         #music-toggle {
-            position: absolute;
-            bottom: 30px;
-            background: transparent;
-            border: 1px solid var(--neon);
-            color: var(--neon);
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            transition: 0.3s;
-            z-index: 20;
-            pointer-events: auto;
+            position: absolute; bottom: 30px; background: transparent; border: 1px solid var(--neon);
+            color: var(--neon); padding: 8px 20px; border-radius: 20px; font-size: 11px;
+            text-transform: uppercase; letter-spacing: 2px; z-index: 20;
         }
     </style>
 </head>
 <body>
 
     <div id="custom-cursor"></div>
-
     <button id="music-toggle">Play Music</button>
 
     <div class="main-container">
         <img src="yt.jpg" class="avatar-main">
         <h1>SLAPYA</h1>
-
         <div class="links-wrap">
-            <a href="https://youtube.com" target="_blank" class="btn">
-                <img src="yt.jpg"> YOUTUBE
-            </a>
-            <a href="https://t.me" target="_blank" class="btn">
-                <img src="tg.jpg" onerror="this.src='yt.jpg'"> TELEGRAM
-            </a>
-            <a href="https://tiktok.com" target="_blank" class="btn">
-                <img src="tiktok.jpg" onerror="this.src='yt.jpg'"> TIKTOK
-            </a>
+            <a href="https://youtube.com" target="_blank" class="btn"><img src="yt.jpg"> YOUTUBE</a>
+            <a href="https://t.me" target="_blank" class="btn"><img src="yt.jpg"> TELEGRAM</a>
+            <a href="https://tiktok.com" target="_blank" class="btn"><img src="yt.jpg"> TIKTOK</a>
         </div>
     </div>
 
@@ -100,53 +93,72 @@
         const cursor = document.getElementById('custom-cursor');
         const track = document.getElementById('track');
         const btn = document.getElementById('music-toggle');
-        let visualizerStarted = false;
+        let smokeIntensity = 1;
 
-        // Показываем ангелочка и двигаем его
+        // ДВИЖЕНИЕ И ДЫМ
         document.addEventListener('mousemove', (e) => {
             cursor.style.display = 'block';
             cursor.style.left = e.clientX + 'px';
             cursor.style.top = e.clientY + 'px';
+            createSmoke(e.clientX, e.clientY);
         });
 
-        // Музыка ВКЛ/ВЫКЛ
+        function createSmoke(x, y) {
+            const p = document.createElement('div');
+            p.className = 'smoke-particle';
+            const size = Math.random() * 20 + 10;
+            p.style.width = size + 'px';
+            p.style.height = size + 'px';
+            p.style.left = x + 'px';
+            p.style.top = y + 'px';
+            
+            // Если играет музыка, дым становится ярче
+            p.style.opacity = 0.4 * smokeIntensity;
+            
+            document.body.appendChild(p);
+
+            setTimeout(() => {
+                p.style.transform = `scale(3) translate(${(Math.random()-0.5)*50}px, ${(Math.random()-0.5)*50}px)`;
+                p.style.opacity = '0';
+            }, 10);
+
+            setTimeout(() => { p.remove(); }, 600);
+        }
+
+        // МУЗЫКА
         btn.addEventListener('click', () => {
             if (track.paused) {
                 track.play();
                 btn.innerText = "Music: ON";
-                if (!visualizerStarted) {
-                    initVisualizer();
-                    visualizerStarted = true;
-                }
+                initVisualizer();
             } else {
                 track.pause();
                 btn.innerText = "Music: OFF";
-                document.body.style.boxShadow = `inset 0 0 30px var(--neon), 0 0 30px var(--neon)`;
+                smokeIntensity = 1;
             }
         });
 
         function initVisualizer() {
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            const source = audioContext.createMediaElementSource(track);
-            const analyser = audioContext.createAnalyser();
-            source.connect(analyser);
-            analyser.connect(audioContext.destination);
-            analyser.fftSize = 64;
-            const bufferLength = analyser.frequencyBinCount;
-            const dataArray = new Uint8Array(bufferLength);
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const src = ctx.createMediaElementSource(track);
+            const ans = ctx.createAnalyser();
+            src.connect(ans); ans.connect(ctx.destination);
+            ans.fftSize = 64;
+            const data = new Uint8Array(ans.frequencyBinCount);
 
-            function animate() {
+            function frame() {
                 if (!track.paused) {
-                    analyser.getByteFrequencyData(dataArray);
-                    let average = dataArray.reduce((a, b) => a + b) / bufferLength;
-                    let glow = 15 + (average / 2.5);
+                    ans.getByteFrequencyData(data);
+                    let avg = data.reduce((a, b) => a + b) / data.length;
+                    smokeIntensity = 1 + (avg / 50); // Увеличиваем плотность дыма под бит
+                    let glow = 15 + (avg / 2);
                     document.body.style.boxShadow = `inset 0 0 ${glow*2}px var(--neon), 0 0 ${glow*2}px var(--neon)`;
-                    document.body.style.borderWidth = `${5 + glow/15}px`;
                 }
-                requestAnimationFrame(animate);
+                requestAnimationFrame(frame);
             }
-            animate();
+            frame();
         }
     </script>
 </body>
 </html>
+
