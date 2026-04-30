@@ -4,24 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Чат для Вас!</title>
+    
+    <!-- ВОТ ЭТИ СТРОЧКИ ОБЯЗАТЕЛЬНО ДОЛЖНЫ БЫТЬ ПЕРЕД СКРИПТОМ -->
     <script src="https://gstatic.com"></script>
     <script src="https://gstatic.com"></script>
     <script src="https://gstatic.com"></script>
+
     <style>
         body { background: #080808; color: #fff; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-        .card { background: #111; border: 1px solid #222; border-radius: 20px; width: 90%; max-width: 400px; height: 80vh; display: flex; flex-direction: column; padding: 15px; }
-        #status-dot { width: 10px; height: 10px; background: red; border-radius: 50%; display: inline-block; margin-right: 5px; box-shadow: 0 0 5px red; }
+        .card { background: #111; border: 1px solid #222; border-radius: 20px; width: 90%; max-width: 400px; height: 80vh; display: flex; flex-direction: column; padding: 15px; position: relative; }
+        .header { display: flex; justify-content: space-between; align-items: center; }
+        #status-dot { width: 10px; height: 10px; background: red; border-radius: 50%; display: inline-block; transition: 0.5s; }
         #chatBox { flex: 1; overflow-y: auto; background: #000; border-radius: 10px; padding: 10px; margin: 10px 0; border: 1px solid #1a1a1a; }
         .msg { background: #1a1a1a; padding: 8px 12px; border-radius: 12px; margin-bottom: 8px; width: fit-content; max-width: 80%; font-size: 14px; }
         .mine { background: #ff004d; margin-left: auto; }
         .input-area { display: flex; gap: 10px; }
         input { flex: 1; background: #222; border: none; color: #fff; padding: 10px; border-radius: 10px; outline: none; }
         button { background: #ff004d; border: none; color: #fff; padding: 0 15px; border-radius: 10px; cursor: pointer; }
+        .yt-icon { width: 45px; height: 45px; border-radius: 50%; border: 1.5px solid #ff004d; object-fit: cover; }
     </style>
 </head>
 <body>
+
     <div class="card">
-        <div><div id="status-dot"></div> <b style="color:#ff004d">ЧАТ ДЛЯ ВАС!</b></div>
+        <div class="header">
+            <div><div id="status-dot"></div> <b style="color:#ff004d">ЧАТ ДЛЯ ВАС!</b></div>
+            <a href="https://youtube.com" target="_blank">
+                <img src="yt.jpg" onerror="this.src='https://pravatar.cc'" class="yt-icon">
+            </a>
+        </div>
         <div id="chatBox"></div>
         <div class="input-area">
             <input type="text" id="chatInput" placeholder="Напишите...">
@@ -30,50 +41,58 @@
     </div>
 
 <script>
-    const firebaseConfig = {
-        apiKey: "AIzaSyBCuF9Eeu4Imh8kzHto2rNor-P_bgjpeWU",
-        authDomain: "://firebaseapp.com",
-        databaseURL: "https://slapya-tv-default-rtdb.firebaseio.com",
-        projectId: "slapya-tv",
-        storageBucket: "slapya-tv.firebasestorage.app",
-        messagingSenderId: "136766849891",
-        appId: "1:136766849891:web:deba1aac85e51e6e4894f6"
-    };
+    // Проверка загрузки
+    const check = setInterval(() => {
+        if (typeof firebase !== 'undefined') {
+            clearInterval(check);
+            
+            const firebaseConfig = {
+                apiKey: "AIzaSyBCuF9Eeu4Imh8kzHto2rNor-P_bgjpeWU",
+                authDomain: "://firebaseapp.com",
+                databaseURL: "https://firebaseio.com",
+                projectId: "slapya-tv",
+                storageBucket: "slapya-tv.firebasestorage.app",
+                messagingSenderId: "136766849891",
+                appId: "1:136766849891:web:deba1aac85e51e6e4894f6"
+            };
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-    const myId = 'u' + Math.random().toString(36).substr(2, 4);
+            firebase.initializeApp(firebaseConfig);
+            const db = firebase.database();
+            const myId = 'u' + Math.random().toString(36).substr(2, 4);
 
-    // Включаем слежку за соединением ПЕРЕД входом
-    db.ref(".info/connected").on("value", (s) => {
-        document.getElementById('status-dot').style.background = s.val() ? "lime" : "red";
-        document.getElementById('status-dot').style.boxShadow = s.val() ? "0 0 10px lime" : "0 0 10px red";
-    });
+            // Индикатор
+            db.ref(".info/connected").on("value", (s) => {
+                const dot = document.getElementById('status-dot');
+                dot.style.background = s.val() ? "lime" : "red";
+                dot.style.boxShadow = s.val() ? "0 0 10px lime" : "0 0 10px red";
+            });
 
-    // Анонимный вход (ОБЯЗАТЕЛЬНО должен быть включен в консоли!)
-    firebase.auth().signInAnonymously().catch(e => {
-        console.error("Ошибка входа:", e.message);
-        if(e.code === 'auth/operation-not-allowed') alert("ВКЛЮЧИ 'Anonymous' во вкладке Authentication!");
-    });
+            // Авторизация
+            firebase.auth().signInAnonymously().catch(e => console.error(e.message));
 
-    function send() {
-        const i = document.getElementById('chatInput');
-        if (!i.value.trim()) return;
-        db.ref('messages').push({ u: myId, t: i.value }).catch(e => alert("Ошибка записи: " + e.message));
-        i.value = "";
-    }
+            // Отправка
+            window.sendMsg = function() {
+                const i = document.getElementById('chatInput');
+                if (!i.value.trim()) return;
+                db.ref('messages').push({ u: myId, t: i.value });
+                i.value = "";
+            }
 
-    document.getElementById('sendBtn').onclick = send;
-    document.getElementById('chatInput').onkeypress = (e) => { if(e.key === 'Enter') send(); };
+            document.getElementById('sendBtn').onclick = window.sendMsg;
+            document.getElementById('chatInput').onkeypress = (e) => { if(e.key === 'Enter') window.sendMsg(); };
 
-    db.ref('messages').limitToLast(20).on('child_added', (snap) => {
-        const m = snap.val();
-        const d = document.createElement('div');
-        d.className = 'msg' + (m.u === myId ? ' mine' : '');
-        d.innerText = m.t;
-        document.getElementById('chatBox').appendChild(d);
-        document.getElementById('chatBox').scrollTop = document.getElementById('chatBox').scrollHeight;
-    });
+            // Чтение
+            db.ref('messages').limitToLast(20).on('child_added', (snap) => {
+                const m = snap.val();
+                const d = document.createElement('div');
+                d.className = 'msg' + (m.u === myId ? ' mine' : '');
+                d.innerText = m.t;
+                document.getElementById('chatBox').appendChild(d);
+                document.getElementById('chatBox').scrollTop = document.getElementById('chatBox').scrollHeight;
+            });
+        }
+    }, 500);
 </script>
+
 </body>
 </html>
