@@ -5,11 +5,23 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SLAPYA - HUB</title>
+    
+    <script src="https://gstatic.com"></script>
+    <script src="https://gstatic.com"></script>
+    <script src="https://gstatic.com"></script>
+
     <style>
         :root { --neon: #ff004d; }
         
-        /* ПОЛНОЕ СКРЫТИЕ КУРСОРОВ */
-        html, body, * { cursor: none !important; } 
+        /* ПОЛНЫЙ ЗАПРЕТ ВЫДЕЛЕНИЯ И ПОДСВЕТКИ */
+        * { 
+            box-sizing: border-box; 
+            cursor: none !important; 
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            user-select: none;
+            -webkit-user-drag: none;
+        } 
 
         body {
             background: #000;
@@ -70,7 +82,6 @@
             color: var(--neon); padding: 10px 25px; border-radius: 25px; font-size: 11px;
             text-transform: uppercase; letter-spacing: 2px; z-index: 20; transition: 0.3s;
         }
-        #music-toggle:hover { background: rgba(255, 0, 77, 0.2); }
     </style>
 </head>
 <body>
@@ -82,11 +93,9 @@
         <img src="yt.jpg" class="avatar-main">
         <h1>SLAPYA</h1>
         <div class="links-wrap">
-            <!-- ТВОЙ ЮТУБ -->
-            <a href="https://www.youtube.com/@SLAPYA" target="_blank" class="btn">
+            <a href="https://youtube.com" target="_blank" class="btn">
                 <img src="yt.jpg"> YOUTUBE
             </a>
-            <!-- ЗАПАСНЫЕ КНОПКИ -->
             <a href="#" class="btn" style="opacity: 0.6;"><img src="yt.jpg"> TELEGRAM</a>
             <a href="#" class="btn" style="opacity: 0.6;"><img src="yt.jpg"> TIKTOK</a>
         </div>
@@ -100,7 +109,7 @@
         const btn = document.getElementById('music-toggle');
         let smokeIntensity = 1;
 
-        // ЭФФЕКТ ДЫМА ПРИ ДВИЖЕНИИ
+        // ДЫМ И КУРСОР
         document.addEventListener('mousemove', (e) => {
             cursor.style.display = 'block';
             cursor.style.left = e.clientX + 'px';
@@ -112,13 +121,10 @@
             const p = document.createElement('div');
             p.className = 'smoke-particle';
             const size = Math.random() * 20 + 15;
-            p.style.width = size + 'px';
-            p.style.height = size + 'px';
-            p.style.left = (x - size/2) + 'px';
-            p.style.top = (y - size/2) + 'px';
+            p.style.width = size + 'px'; p.style.height = size + 'px';
+            p.style.left = (x - size/2) + 'px'; p.style.top = (y - size/2) + 'px';
             p.style.opacity = 0.5 * smokeIntensity;
             document.body.appendChild(p);
-
             setTimeout(() => {
                 p.style.transform = `scale(4) translate(${(Math.random()-0.5)*60}px, ${(Math.random()-0.5)*60}px)`;
                 p.style.opacity = '0';
@@ -126,7 +132,7 @@
             setTimeout(() => { p.remove(); }, 700);
         }
 
-        // УПРАВЛЕНИЕ МУЗЫКОЙ И ВИЗУАЛОМ
+        // МУЗЫКА И ПУЛЬСАЦИЯ
         btn.addEventListener('click', () => {
             if (track.paused) {
                 track.play();
@@ -148,7 +154,6 @@
             src.connect(ans); ans.connect(ctx.destination);
             ans.fftSize = 64;
             const data = new Uint8Array(ans.frequencyBinCount);
-
             function frame() {
                 if (!track.paused) {
                     ans.getByteFrequencyData(data);
@@ -165,4 +170,5 @@
     </script>
 </body>
 </html>
+
 
