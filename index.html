@@ -7,26 +7,18 @@
     <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { background: #080808; color: #fff; font-family: sans-serif; margin: 0; padding: 0; overflow: hidden; height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; }
-        
-        /* ЮТУБ-АНГЕЛОЧЕК В УГЛУ */
-        .top-yt-link { position: absolute; top: 20px; right: 20px; text-decoration: none; z-index: 9999; transition: 0.3s; }
-        .top-yt-link:hover { transform: scale(1.1); filter: drop-shadow(0 0 15px #ff004d); }
-        .yt-img { width: 65px; height: 65px; border-radius: 50%; border: 3px solid #ff004d; object-fit: cover; background: #222; }
-
-        .card { background: #111; border: 1px solid #222; border-radius: 25px; width: 95%; max-width: 400px; height: 85vh; display: flex; flex-direction: column; padding: 15px; box-shadow: 0 20px 60px rgba(0,0,0,1); position: relative; }
+        .top-yt-link { position: absolute; top: 20px; right: 20px; text-decoration: none; z-index: 9999; }
+        .yt-img { width: 60px; height: 60px; border-radius: 50%; border: 3px solid #ff004d; object-fit: cover; background: #222; }
+        .card { background: #111; border: 1px solid #222; border-radius: 25px; width: 95%; max-width: 400px; height: 85vh; display: flex; flex-direction: column; padding: 15px; box-shadow: 0 20px 60px rgba(0,0,0,1); }
         .header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px solid #1a1a1a; margin-bottom: 10px; }
         .logo { font-size: 18px; font-weight: 900; color: #ff004d; text-transform: uppercase; }
-        
         #chatBox { flex: 1; overflow-y: auto; background: #050505; border-radius: 18px; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
-        .msg-wrapper { display: flex; align-items: flex-end; gap: 8px; max-width: 85%; animation: fadeIn 0.2s ease; }
+        .msg-wrapper { display: flex; align-items: flex-end; gap: 8px; max-width: 85%; }
         .msg-wrapper.mine { flex-direction: row-reverse; align-self: flex-end; }
-        
-        .avatar, .current-user-av { width: 35px; height: 35px; border-radius: 50%; border: 1.5px solid #ff004d !important; object-fit: cover; background: #333; flex-shrink: 0; display: block; }
-        
+        .avatar, .current-user-av { width: 35px; height: 35px; border-radius: 50%; border: 1.5px solid #ff004d; object-fit: cover; background: #333; flex-shrink: 0; }
         .msg { padding: 10px 14px; border-radius: 18px; font-size: 14px; line-height: 1.4; word-wrap: break-word; }
         .mine .msg { background: #ff004d; color: white; border-bottom-right-radius: 2px; }
         .others .msg { background: #1a1a1a; color: #eee; border-bottom-left-radius: 2px; border: 1px solid #222; }
-        
         .input-area { display: flex; gap: 10px; align-items: center; margin-top: 15px; background: #1a1a1a; padding: 8px 12px; border-radius: 25px; }
         input { flex: 1; padding: 5px; border: none; background: transparent; color: #fff; outline: none; font-size: 15px; }
         .file-label { cursor: pointer; font-size: 22px; }
@@ -48,7 +40,7 @@
         <div id="chatBox"></div>
         <div class="input-area">
             <img id="myCurrentAv" src="https://pravatar.cc" class="current-user-av">
-            <input type="text" id="chatInput" placeholder="Напишите...">
+            <input type="text" id="chatInput" placeholder="Напишите..." autocomplete="off">
             <button id="sendBtn" class="send-btn">➤</button>
         </div>
     </div>
@@ -68,7 +60,6 @@
     let userAvatar = localStorage.getItem('userAvatar') || 'https://pravatar.cc';
     document.getElementById('myCurrentAv').src = userAvatar;
 
-    // Смена авы
     document.getElementById('avatarInput').addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (!file) return;
@@ -77,9 +68,9 @@
             const img = new Image();
             img.onload = () => {
                 const canvas = document.createElement('canvas');
-                canvas.width = 100; canvas.height = 100;
-                canvas.getContext('2d').drawImage(img, 0, 0, 100, 100);
-                userAvatar = canvas.toDataURL('image/jpeg', 0.8);
+                canvas.width = 80; canvas.height = 80;
+                canvas.getContext('2d').drawImage(img, 0, 0, 80, 80);
+                userAvatar = canvas.toDataURL('image/jpeg', 0.5); // Сжимаем до минимума
                 localStorage.setItem('userAvatar', userAvatar);
                 document.getElementById('myCurrentAv').src = userAvatar;
             };
@@ -88,23 +79,23 @@
         reader.readAsDataURL(file);
     });
 
-    // Функция отправки
     const sendMsg = () => {
         const input = document.getElementById('chatInput');
         const text = input.value.trim();
         if (!text) return;
         
+        // Если аватарка сломалась (черный квадрат), ставим дефолт
+        const finalAv = (userAvatar.length < 500) ? 'https://pravatar.cc' : userAvatar;
+
         push(messagesRef, { 
-            userId: userId, 
-            avatar: userAvatar, 
-            text: text, 
-            timestamp: serverTimestamp() 
-        });
-        input.value = "";
+            userId, avatar: finalAv, text, timestamp: serverTimestamp() 
+        }).then(() => {
+            input.value = "";
+        }).catch(err => alert("Ошибка базы!"));
     };
 
-    document.getElementById('sendBtn').addEventListener('click', sendMsg);
-    document.getElementById('chatInput').addEventListener('keypress', (e) => { if(e.key === 'Enter') sendMsg(); });
+    document.getElementById('sendBtn').onclick = sendMsg;
+    document.getElementById('chatInput').onkeypress = (e) => { if(e.key === 'Enter') sendMsg(); };
 
     onChildAdded(messagesRef, (data) => {
         const msg = data.val();
@@ -112,12 +103,14 @@
         const wrapper = document.createElement('div');
         wrapper.className = `msg-wrapper ${isMine ? 'mine' : 'others'}`;
         wrapper.innerHTML = `<img src="${msg.avatar}" class="avatar"><div class="msg">${msg.text}</div>`;
-        document.getElementById('chatBox').appendChild(wrapper);
-        document.getElementById('chatBox').scrollTop = document.getElementById('chatBox').scrollHeight;
+        const box = document.getElementById('chatBox');
+        box.appendChild(wrapper);
+        box.scrollTop = box.scrollHeight;
     });
 </script>
 </body>
 </html>
+
 
 
 
