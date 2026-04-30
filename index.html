@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Чат для Вас!</title>
     
-    <!-- ВОТ ЭТИ СТРОЧКИ ОБЯЗАТЕЛЬНО ДОЛЖНЫ БЫТЬ ПЕРЕД СКРИПТОМ -->
+    <!-- 1. ПОДКЛЮЧАЕМ БИБЛИОТЕКИ (ОБЯЗАТЕЛЬНО) -->
     <script src="https://gstatic.com"></script>
     <script src="https://gstatic.com"></script>
     <script src="https://gstatic.com"></script>
@@ -14,7 +14,7 @@
         body { background: #080808; color: #fff; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
         .card { background: #111; border: 1px solid #222; border-radius: 20px; width: 90%; max-width: 400px; height: 80vh; display: flex; flex-direction: column; padding: 15px; position: relative; }
         .header { display: flex; justify-content: space-between; align-items: center; }
-        #status-dot { width: 10px; height: 10px; background: red; border-radius: 50%; display: inline-block; transition: 0.5s; }
+        #status-dot { width: 10px; height: 10px; background: red; border-radius: 50%; display: inline-block; transition: 0.5s; box-shadow: 0 0 5px red; }
         #chatBox { flex: 1; overflow-y: auto; background: #000; border-radius: 10px; padding: 10px; margin: 10px 0; border: 1px solid #1a1a1a; }
         .msg { background: #1a1a1a; padding: 8px 12px; border-radius: 12px; margin-bottom: 8px; width: fit-content; max-width: 80%; font-size: 14px; }
         .mine { background: #ff004d; margin-left: auto; }
@@ -41,7 +41,7 @@
     </div>
 
 <script>
-    // Проверка загрузки
+    // 2. КОНФИГ И ЗАПУСК
     const check = setInterval(() => {
         if (typeof firebase !== 'undefined') {
             clearInterval(check);
@@ -60,28 +60,28 @@
             const db = firebase.database();
             const myId = 'u' + Math.random().toString(36).substr(2, 4);
 
-            // Индикатор
+            // Индикатор связи
             db.ref(".info/connected").on("value", (s) => {
                 const dot = document.getElementById('status-dot');
                 dot.style.background = s.val() ? "lime" : "red";
                 dot.style.boxShadow = s.val() ? "0 0 10px lime" : "0 0 10px red";
             });
 
-            // Авторизация
+            // Вход
             firebase.auth().signInAnonymously().catch(e => console.error(e.message));
 
-            // Отправка
-            window.sendMsg = function() {
+            // Отправка сообщений
+            function sendMessage() {
                 const i = document.getElementById('chatInput');
                 if (!i.value.trim()) return;
                 db.ref('messages').push({ u: myId, t: i.value });
                 i.value = "";
             }
 
-            document.getElementById('sendBtn').onclick = window.sendMsg;
-            document.getElementById('chatInput').onkeypress = (e) => { if(e.key === 'Enter') window.sendMsg(); };
+            document.getElementById('sendBtn').onclick = sendMessage;
+            document.getElementById('chatInput').onkeypress = (e) => { if(e.key === 'Enter') sendMessage(); };
 
-            // Чтение
+            // Получение сообщений
             db.ref('messages').limitToLast(20).on('child_added', (snap) => {
                 const m = snap.val();
                 const d = document.createElement('div');
@@ -96,3 +96,4 @@
 
 </body>
 </html>
+
