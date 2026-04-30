@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Чат для Вас!</title>
     
-    <!-- ПОДКЛЮЧЕНИЕ БИБЛИОТЕК -->
     <script src="https://gstatic.com"></script>
     <script src="https://gstatic.com"></script>
     <script src="https://gstatic.com"></script>
@@ -21,9 +20,8 @@
         .mine { align-self: flex-end; background: #ff004d; color: #fff; }
         .input-area { display: flex; gap: 10px; margin-top: 10px; background: #1a1a1a; padding: 10px; border-radius: 25px; }
         input { flex: 1; border: none; background: transparent; color: #fff; outline: none; font-size: 15px; }
-        button { background: #ff004d; border: none; color: #fff; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; }
-        .yt-icon { width: 45px; height: 45px; border-radius: 50%; border: 2px solid #ff004d; object-fit: cover; cursor: pointer; transition: 0.3s; }
-        .yt-icon:hover { transform: scale(1.1); box-shadow: 0 0 10px #ff004d; }
+        button { background: #ff004d; border: none; color: #fff; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .yt-icon { width: 45px; height: 45px; border-radius: 50%; border: 2px solid #ff004d; object-fit: cover; }
     </style>
 </head>
 <body>
@@ -31,9 +29,8 @@
     <div class="card">
         <div class="header">
             <div><div id="status-dot"></div> <b style="color:#ff004d; font-size: 14px;">ЧАТ ДЛЯ ВАС!</b></div>
-            <!-- ТВОЯ ССЫЛКА НА ЮТУБ -->
-            <a href="https://www.youtube.com/@SLAPYA" target="_blank">
-                <img src="yt.jpg" onerror="this.src='https://pravatar.cc'" class="yt-icon" title="Мой YouTube канал">
+            <a href="https://youtube.com" target="_blank">
+                <img src="yt.jpg" onerror="this.src='https://pravatar.cc'" class="yt-icon">
             </a>
         </div>
         <div id="chatBox"></div>
@@ -44,59 +41,55 @@
     </div>
 
 <script>
-    // Проверка загрузки Firebase
-    const checkLoad = setInterval(() => {
+    const check = setInterval(() => {
         if (typeof firebase !== 'undefined') {
-            clearInterval(checkLoad);
-            startApp();
+            clearInterval(check);
+            const firebaseConfig = {
+                apiKey: "AIzaSyBCuF9Eeu4Imh8kzHto2rNor-P_bgjpeWU",
+                authDomain: "://firebaseapp.com",
+                databaseURL: "https://slapya-tv-default-rtdb.firebaseio.com",
+                projectId: "slapya-tv",
+                storageBucket: "slapya-tv.firebasestorage.app",
+                messagingSenderId: "136766849891",
+                appId: "1:136766849891:web:deba1aac85e51e6e4894f6"
+            };
+
+            firebase.initializeApp(firebaseConfig);
+            const db = firebase.database();
+            const auth = firebase.auth();
+
+            // Принудительный вход
+            auth.signInAnonymously().then(() => {
+                // После входа проверяем связь
+                db.ref(".info/connected").on("value", (s) => {
+                    const dot = document.getElementById('status-dot');
+                    dot.style.background = s.val() ? "lime" : "red";
+                    dot.style.boxShadow = s.val() ? "0 0 10px lime" : "0 0 10px red";
+                });
+            });
+
+            const myId = 'u' + Math.random().toString(36).substr(2, 5);
+
+            function send() {
+                const i = document.getElementById('chatInput');
+                if (!i.value.trim()) return;
+                db.ref('messages').push({ u: myId, t: i.value });
+                i.value = "";
+            }
+
+            document.getElementById('sendBtn').onclick = send;
+            document.getElementById('chatInput').onkeypress = (e) => { if(e.key === 'Enter') send(); };
+
+            db.ref('messages').limitToLast(30).on('child_added', (snap) => {
+                const m = snap.val();
+                const d = document.createElement('div');
+                d.className = 'msg' + (m.u === myId ? ' mine' : '');
+                d.innerText = m.t;
+                document.getElementById('chatBox').appendChild(d);
+                document.getElementById('chatBox').scrollTop = document.getElementById('chatBox').scrollHeight;
+            });
         }
     }, 500);
-
-    function startApp() {
-        const firebaseConfig = {
-            apiKey: "AIzaSyBCuF9Eeu4Imh8kzHto2rNor-P_bgjpeWU",
-            authDomain: "://firebaseapp.com",
-            databaseURL: "https://firebaseio.com",
-            projectId: "slapya-tv",
-            storageBucket: "slapya-tv.firebasestorage.app",
-            messagingSenderId: "136766849891",
-            appId: "1:136766849891:web:deba1aac85e51e6e4894f6"
-        };
-
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-        const auth = firebase.auth();
-
-        auth.signInAnonymously().catch(e => console.log("Вход..."));
-
-        db.ref(".info/connected").on("value", (s) => {
-            const dot = document.getElementById('status-dot');
-            dot.style.background = s.val() ? "lime" : "red";
-            dot.style.boxShadow = s.val() ? "0 0 10px lime" : "0 0 10px red";
-        });
-
-        const myId = 'u' + Math.random().toString(36).substr(2, 5);
-
-        function send() {
-            const i = document.getElementById('chatInput');
-            if (!i.value.trim()) return;
-            db.ref('messages').push({ u: myId, t: i.value }).catch(e => alert("Ошибка! Проверь Rules в Firebase"));
-            i.value = "";
-        }
-
-        document.getElementById('sendBtn').onclick = send;
-        document.getElementById('chatInput').onkeypress = (e) => { if(e.key === 'Enter') send(); };
-
-        db.ref('messages').limitToLast(30).on('child_added', (snap) => {
-            const m = snap.val();
-            const d = document.createElement('div');
-            d.className = 'msg' + (m.u === myId ? ' mine' : '');
-            d.innerText = m.t;
-            const box = document.getElementById('chatBox');
-            box.appendChild(d);
-            box.scrollTop = box.scrollHeight;
-        });
-    }
 </script>
 </body>
 </html>
