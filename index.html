@@ -2,11 +2,13 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SLAPYA - HUB</title>
     <style>
         :root { --neon: #ff004d; }
-        * { box-sizing: border-box; cursor: none; } /* Скрываем обычную мышь */
+        
+        /* ПОЛНОСТЬЮ УКРЫВАЕМ КУРСОР ВЕЗДЕ */
+        * { box-sizing: border-box; cursor: none !important; } 
 
         body {
             background: #000;
@@ -19,12 +21,13 @@
             border: 5px solid var(--neon);
             box-shadow: inset 0 0 30px var(--neon), 0 0 30px var(--neon);
             font-family: sans-serif;
+            transition: box-shadow 0.1s ease;
         }
 
         /* КУРСОР-АНГЕЛОЧЕК */
         #custom-cursor {
-            width: 40px;
-            height: 40px;
+            width: 45px;
+            height: 45px;
             position: fixed;
             pointer-events: none;
             z-index: 9999;
@@ -33,80 +36,45 @@
             border: 2px solid var(--neon);
             box-shadow: 0 0 15px var(--neon);
             transform: translate(-50%, -50%);
-            transition: transform 0.1s ease-out;
+            transition: transform 0.05s linear;
         }
 
-        .main-container {
-            text-align: center;
-            z-index: 10;
-        }
+        .main-container { text-align: center; z-index: 10; }
+        .avatar-main { width: 120px; height: 120px; border-radius: 50%; border: 4px solid var(--neon); box-shadow: 0 0 25px var(--neon); margin-bottom: 10px; }
+        h1 { color: #fff; letter-spacing: 5px; text-transform: uppercase; text-shadow: 0 0 10px var(--neon); margin: 0 0 30px 0; }
 
-        .avatar-main {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            border: 4px solid var(--neon);
-            box-shadow: 0 0 25px var(--neon);
-            margin-bottom: 10px;
-        }
-
-        h1 {
-            color: #fff;
-            letter-spacing: 5px;
-            text-transform: uppercase;
-            text-shadow: 0 0 10px var(--neon);
-            margin-bottom: 30px;
-        }
-
-        .links-wrap {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
+        .links-wrap { display: flex; flex-direction: column; gap: 15px; }
         .btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 280px;
-            padding: 12px;
-            background: rgba(255, 0, 77, 0.1);
-            border: 2px solid var(--neon);
-            border-radius: 50px;
-            color: #fff;
-            text-decoration: none;
-            font-weight: bold;
-            transition: 0.3s;
-            box-shadow: 0 0 10px rgba(255, 0, 77, 0.3);
+            display: flex; align-items: center; justify-content: center; width: 280px; padding: 12px;
+            background: rgba(255, 0, 77, 0.1); border: 2px solid var(--neon); border-radius: 50px;
+            color: #fff; text-decoration: none; font-weight: bold; transition: 0.3s;
         }
+        .btn:hover { background: var(--neon); box-shadow: 0 0 30px var(--neon); transform: scale(1.05); }
+        .btn img { width: 25px; height: 25px; border-radius: 50%; margin-right: 15px; }
 
-        .btn:hover {
-            background: var(--neon);
-            box-shadow: 0 0 30px var(--neon);
-            transform: scale(1.05);
-        }
-
-        .btn img {
-            width: 25px;
-            height: 25px;
-            border-radius: 50%;
-            margin-right: 15px;
-        }
-
-        #music-status {
+        /* КНОПКА ВЫКЛЮЧЕНИЯ МУЗЫКИ */
+        #music-toggle {
             position: absolute;
-            bottom: 20px;
+            bottom: 30px;
+            background: transparent;
+            border: 1px solid var(--neon);
             color: var(--neon);
-            font-size: 12px;
-            letter-spacing: 2px;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 11px;
             text-transform: uppercase;
-            cursor: pointer;
+            letter-spacing: 2px;
+            transition: 0.3s;
+            z-index: 20;
         }
+        #music-toggle:hover { background: rgba(255, 0, 77, 0.2); box-shadow: 0 0 10px var(--neon); }
     </style>
 </head>
 <body>
 
     <div id="custom-cursor"></div>
+
+    <button id="music-toggle">Play Music</button>
 
     <div class="main-container">
         <img src="yt.jpg" class="avatar-main">
@@ -117,14 +85,12 @@
                 <img src="yt.jpg"> YOUTUBE
             </a>
             <a href="https://t.me" target="_blank" class="btn">
-                <img src="tg.jpg"> TELEGRAM
+                <img src="tg.jpg" onerror="this.src='yt.jpg'"> TELEGRAM
             </a>
             <a href="https://tiktok.com" target="_blank" class="btn">
-                <img src="tiktok.jpg"> TIKTOK
+                <img src="tiktok.jpg" onerror="this.src='yt.jpg'"> TIKTOK
             </a>
         </div>
-
-        <div id="music-status">Нажми, чтобы включить звук</div>
     </div>
 
     <audio id="track" src="music.mp3" loop></audio>
@@ -132,22 +98,31 @@
     <script>
         const cursor = document.getElementById('custom-cursor');
         const track = document.getElementById('track');
-        const status = document.getElementById('music-status');
+        const btn = document.getElementById('music-toggle');
+        let visualizerStarted = false;
 
-        // Движение ангелочка за мышкой
+        // Плавный курсор
         document.addEventListener('mousemove', (e) => {
             cursor.style.left = e.clientX + 'px';
             cursor.style.top = e.clientY + 'px';
         });
 
-        // Запуск музыки и пульсации
-        document.body.onclick = () => {
+        // ВКЛ / ВЫКЛ Музыки
+        btn.addEventListener('click', () => {
             if (track.paused) {
                 track.play();
-                status.innerText = "Music is pumping";
-                initVisualizer();
+                btn.innerText = "Music: ON";
+                if (!visualizerStarted) {
+                    initVisualizer();
+                    visualizerStarted = true;
+                }
+            } else {
+                track.pause();
+                btn.innerText = "Music: OFF";
+                // Возвращаем неон в покой
+                document.body.style.boxShadow = `inset 0 0 30px var(--neon), 0 0 30px var(--neon)`;
             }
-        };
+        });
 
         function initVisualizer() {
             const audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -160,14 +135,13 @@
             const dataArray = new Uint8Array(bufferLength);
 
             function animate() {
-                analyser.getByteFrequencyData(dataArray);
-                let average = dataArray.reduce((a, b) => a + b) / bufferLength;
-                
-                // Пульсация неона
-                let glow = 10 + (average / 3);
-                document.body.style.boxShadow = `inset 0 0 ${glow*2}px var(--neon), 0 0 ${glow*2}px var(--neon)`;
-                document.body.style.borderWidth = `${4 + glow/10}px`;
-                
+                if (!track.paused) {
+                    analyser.getByteFrequencyData(dataArray);
+                    let average = dataArray.reduce((a, b) => a + b) / bufferLength;
+                    let glow = 15 + (average / 2.5);
+                    document.body.style.boxShadow = `inset 0 0 ${glow*2}px var(--neon), 0 0 ${glow*2}px var(--neon)`;
+                    document.body.style.borderWidth = `${5 + glow/15}px`;
+                }
                 requestAnimationFrame(animate);
             }
             animate();
@@ -175,4 +149,3 @@
     </script>
 </body>
 </html>
-
