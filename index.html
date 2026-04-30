@@ -10,7 +10,7 @@
         
         .top-yt-link { position: absolute; top: 20px; right: 20px; text-decoration: none; z-index: 100; transition: 0.3s; }
         .top-yt-link:hover { transform: scale(1.1); filter: drop-shadow(0 0 15px #ff004d); }
-        .yt-img { width: 60px; height: 60px; border-radius: 50%; border: 2px solid #ff004d; object-fit: cover; background: #222; }
+        .yt-img { width: 60px; height: 60px; border-radius: 50%; border: 3px solid #ff004d; object-fit: cover; background: #222; }
 
         .card { background: #111; border: 1px solid #222; border-radius: 25px; width: 95%; max-width: 400px; height: 85vh; display: flex; flex-direction: column; padding: 15px; box-shadow: 0 20px 60px rgba(0,0,0,1); position: relative; }
         .header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px solid #1a1a1a; margin-bottom: 10px; }
@@ -19,17 +19,22 @@
         #chatBox { flex: 1; overflow-y: auto; background: #050505; border-radius: 18px; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
         .msg-wrapper { display: flex; align-items: flex-end; gap: 8px; max-width: 85%; animation: fadeIn 0.2s ease; }
         .msg-wrapper.mine { flex-direction: row-reverse; align-self: flex-end; }
-        .avatar, .current-user-av { width: 32px; height: 32px; border-radius: 50%; border: 1px solid #ff004d; object-fit: cover; background: #222; flex-shrink: 0; }
         
-        .msg { padding: 8px 12px; border-radius: 15px; font-size: 14px; line-height: 1.4; }
+        .avatar, .current-user-av { width: 35px; height: 35px; border-radius: 50%; border: 1.5px solid #ff004d; object-fit: cover; background: #333; flex-shrink: 0; }
+        
+        .msg { padding: 10px 14px; border-radius: 18px; font-size: 14px; line-height: 1.4; }
         .mine .msg { background: #ff004d; color: white; border-bottom-right-radius: 2px; }
         .others .msg { background: #1a1a1a; color: #eee; border-bottom-left-radius: 2px; border: 1px solid #222; }
         
-        .input-area { display: flex; gap: 8px; align-items: center; margin-top: 15px; background: #1a1a1a; padding: 6px 12px; border-radius: 20px; }
-        input { flex: 1; padding: 10px; border: none; background: transparent; color: #fff; outline: none; }
-        .file-label { cursor: pointer; font-size: 18px; opacity: 0.7; }
+        .input-area { display: flex; gap: 10px; align-items: center; margin-top: 15px; background: #1a1a1a; padding: 8px 12px; border-radius: 25px; }
+        input { flex: 1; padding: 5px; border: none; background: transparent; color: #fff; outline: none; font-size: 15px; }
+        
+        /* НОВАЯ ИКОНКА САМОЛЕТА ДЛЯ ВЫБОРА ФОТО */
+        .file-label { cursor: pointer; font-size: 22px; transition: 0.2s; opacity: 0.8; display: flex; align-items: center; }
+        .file-label:hover { opacity: 1; color: #ff004d; transform: rotate(-15deg); }
         #avatarInput { display: none; }
-        .send-btn { background: #ff004d; color: #fff; border: none; border-radius: 50%; width: 35px; height: 35px; cursor: pointer; font-weight: bold; }
+        
+        .send-btn { background: #ff004d; color: #fff; border: none; border-radius: 50%; width: 35px; height: 35px; cursor: pointer; font-weight: bold; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
 <body>
@@ -41,12 +46,13 @@
     <div class="card">
         <div class="header">
             <div class="logo">ЧАТ ДЛЯ ВАС!</div>
-            <!-- Кнопка смены аватарки -->
-            <label class="file-label" title="Сменить аву">📸 <input type="file" id="avatarInput" accept="image/*"></label>
+            <!-- ЗАМЕНИЛИ ФОТОАППАРАТ НА САМОЛЕТИК -->
+            <label class="file-label" title="Выбрать аву">✈️<input type="file" id="avatarInput" accept="image/*"></label>
         </div>
+        
         <div id="chatBox"></div>
+        
         <div class="input-area">
-            <!-- Аватарка в поле ввода, которая не пропадает -->
             <img id="myCurrentAv" src="" class="current-user-av">
             <input type="text" id="chatInput" placeholder="Напишите..." autocomplete="off">
             <button class="send-btn" onclick="send()">➤</button>
@@ -62,25 +68,21 @@
     const db = getDatabase(app);
     const messagesRef = ref(db, 'messages');
 
-    // 1. Ищем старый ID или создаем новый
     const userId = localStorage.getItem('userId') || Math.random().toString(36).substring(7);
     localStorage.setItem('userId', userId);
     
-    // 2. Ищем сохраненную аватарку или ставим стандартную
-    let userAvatar = localStorage.getItem('userAvatar') || 'https://pravatar.cc';
-    const myImg = document.getElementById('myCurrentAv');
-    myImg.src = userAvatar;
+    let userAvatar = localStorage.getItem('userAvatar') || 'https://pravatar.cc' + userId;
+    const myImgDisplay = document.getElementById('myCurrentAv');
+    myImgDisplay.src = userAvatar;
 
-    // Смена аватарки через галерею
     document.getElementById('avatarInput').addEventListener('change', function(e) {
-        const file = e.target.files[0];
+        const file = e.target.files;
         if (!file) return;
         const reader = new FileReader();
         reader.onload = function(event) {
             userAvatar = event.target.result;
-            // СОХРАНЯЕМ В ПАМЯТЬ БРАУЗЕРА
             localStorage.setItem('userAvatar', userAvatar);
-            myImg.src = userAvatar;
+            myImgDisplay.src = userAvatar;
         };
         reader.readAsDataURL(file);
     });
@@ -97,13 +99,16 @@
         const isMine = msg.userId === userId;
         const wrapper = document.createElement('div');
         wrapper.className = `msg-wrapper ${isMine ? 'mine' : 'others'}`;
-        wrapper.innerHTML = `<img src="${msg.avatar}" class="avatar"><div class="msg">${msg.text}</div>`;
-        document.getElementById('chatBox').appendChild(wrapper);
-        document.getElementById('chatBox').scrollTop = document.getElementById('chatBox').scrollHeight;
+        const displayAv = msg.avatar || 'https://pravatar.cc';
+        wrapper.innerHTML = `<img src="${displayAv}" class="avatar"><div class="msg">${msg.text}</div>`;
+        const chatBox = document.getElementById('chatBox');
+        chatBox.appendChild(wrapper);
+        chatBox.scrollTop = chatBox.scrollHeight;
     });
 </script>
 </body>
 </html>
+
 
 
 
