@@ -1,14 +1,72 @@
-<!-- 1. ИСПРАВЛЕННЫЕ СКРИПТЫ ПОДКЛЮЧЕНИЯ (COMPAT-версии) -->
-<script src="https://gstatic.com"></script>
-<script src="https://gstatic.com"></script>
-<script src="https://gstatic.com"></script>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Чат для Вас!</title>
+    
+    <!-- ИСПРАВЛЕННЫЕ ПОДКЛЮЧЕНИЯ FIREBASE (ТЕПЕРЬ ВСЁ ЗАГРУЗИТСЯ) -->
+    <script src="https://gstatic.com"></script>
+    <script src="https://gstatic.com"></script>
+    <script src="https://gstatic.com"></script>
+
+    <style>
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { background: #080808; color: #fff; font-family: sans-serif; margin: 0; padding: 0; overflow: hidden; height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; }
+        
+        .top-yt-link { position: absolute; top: 20px; right: 20px; text-decoration: none; z-index: 9999; transition: 0.3s; }
+        .yt-img { width: 60px; height: 60px; border-radius: 50%; border: 2px solid #ff004d; object-fit: cover; background: #222; }
+
+        .card { background: #111; border: 1px solid #222; border-radius: 25px; width: 95%; max-width: 420px; height: 85vh; display: flex; flex-direction: column; padding: 15px; box-shadow: 0 20px 60px rgba(0,0,0,1); }
+        .header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px solid #1a1a1a; margin-bottom: 10px; }
+        .logo { font-size: 18px; font-weight: 900; color: #ff004d; text-transform: uppercase; }
+        
+        #status-dot { width: 10px; height: 10px; background: red; border-radius: 50%; display: inline-block; margin-right: 5px; box-shadow: 0 0 5px red; transition: 0.5s; }
+
+        #chatBox { flex: 1; overflow-y: auto; background: #050505; border-radius: 18px; padding: 12px; display: flex; flex-direction: column; gap: 10px; scroll-behavior: smooth; }
+        .msg-wrapper { display: flex; align-items: flex-end; gap: 8px; max-width: 85%; }
+        .msg-wrapper.mine { flex-direction: row-reverse; align-self: flex-end; }
+        
+        .avatar, .current-user-av { width: 35px; height: 35px; border-radius: 50%; border: 1.5px solid #ff004d; object-fit: cover; background: #333; flex-shrink: 0; }
+        .msg { padding: 10px 14px; border-radius: 18px; font-size: 14px; line-height: 1.4; word-wrap: break-word; }
+        .mine .msg { background: #ff004d; color: white; border-bottom-right-radius: 2px; }
+        .others .msg { background: #1a1a1a; color: #eee; border-bottom-left-radius: 2px; border: 1px solid #222; }
+        
+        .input-area { display: flex; gap: 10px; align-items: center; margin-top: 15px; background: #1a1a1a; padding: 8px 12px; border-radius: 25px; }
+        input { flex: 1; padding: 5px; border: none; background: transparent; color: #fff; outline: none; font-size: 15px; }
+        .file-label { cursor: pointer; font-size: 22px; }
+        #avatarInput { display: none; }
+        .send-btn { background: #ff004d; color: #fff; border: none; border-radius: 50%; width: 35px; height: 35px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    </style>
+</head>
+<body>
+
+    <a href="https://youtube.com" target="_blank" class="top-yt-link">
+        <img src="https://pravatar.cc" class="yt-img">
+    </a>
+
+    <div class="card">
+        <div class="header">
+            <div>
+                <div id="status-dot"></div>
+                <span class="logo">ЧАТ ДЛЯ ВАС!</span>
+            </div>
+            <label class="file-label">✈️<input type="file" id="avatarInput" accept="image/*"></label>
+        </div>
+        <div id="chatBox"></div>
+        <div class="input-area">
+            <img id="myCurrentAv" src="https://pravatar.cc" class="current-user-av">
+            <input type="text" id="chatInput" placeholder="Напишите...">
+            <button class="send-btn" id="sendBtn">➤</button>
+        </div>
+    </div>
 
 <script>
-    // 2. ИСПРАВЛЕННЫЙ КОНФИГ (проверь authDomain и databaseURL!)
+    // КОНФИГ С ТВОИМИ ДАННЫМИ
     const firebaseConfig = {
         apiKey: "AIzaSyBCuF9Eeu4Imh8kzHto2rNor-P_bgjpeWU",
-        authDomain: "slapya-tv.firebaseapp.com", // Добавил slapya-tv
-        databaseURL: "https://slapya-tv-default-rtdb.firebaseio.com", // Добавил полный URL
+        authDomain: "://firebaseapp.com",
+        databaseURL: "https://firebaseio.com",
         projectId: "slapya-tv",
         storageBucket: "slapya-tv.firebasestorage.app",
         messagingSenderId: "136766849891",
@@ -18,18 +76,13 @@
     // Инициализация
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-    const auth = firebase.auth(); // Добавили константу для авторизации
+    const auth = firebase.auth();
     const messagesRef = db.ref('messages');
 
-    // 3. ВКЛЮЧАЕМ АНОНИМНУЮ АВТОРИЗАЦИЮ
+    // АНОНИМНЫЙ ВХОД
     auth.signInAnonymously()
-        .then(() => {
-            console.log("Авторизован анонимно!");
-        })
-        .catch((error) => {
-            console.error("Ошибка входа:", error.message);
-            alert("Ошибка входа: " + error.message);
-        });
+        .then(() => console.log("Успешный вход!"))
+        .catch(err => console.error("Ошибка входа:", err.message));
 
     // Проверка соединения
     db.ref(".info/connected").on("value", (snap) => {
@@ -43,8 +96,7 @@
         }
     });
 
-    // Генерация ID пользователя (теперь привязана к Firebase Auth)
-    let userId = localStorage.getItem('userId') || 'u' + Math.random().toString(36).substr(2, 9);
+    const userId = localStorage.getItem('userId') || 'u' + Math.random().toString(36).substr(2, 9);
     localStorage.setItem('userId', userId);
     
     let userAvatar = localStorage.getItem('userAvatar') || 'https://pravatar.cc';
@@ -80,12 +132,12 @@
             u: userId,
             a: userAvatar,
             t: text,
-            ts: firebase.database.ServerValue.TIMESTAMP // Правильное серверное время
+            ts: firebase.database.ServerValue.TIMESTAMP
         }).then(() => {
             input.value = "";
         }).catch(err => {
             console.error(err);
-            alert("ОШИБКА: Доступ запрещен. Убедись, что Rules в Firebase настроены!");
+            alert("ОШИБКА: Проверь Rules в консоли Firebase!");
         });
     }
 
@@ -104,6 +156,9 @@
         box.scrollTop = box.scrollHeight;
     });
 </script>
+</body>
+</html>
+
 
 
 
