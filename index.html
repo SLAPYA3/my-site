@@ -8,51 +8,49 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { background: #080808; color: #fff; font-family: sans-serif; margin: 0; padding: 0; overflow: hidden; height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; }
         
-        /* КНОПКА ЮТУБА (АНГЕЛОЧЕК) В УГЛУ */
         .top-yt-link { position: fixed; top: 20px; right: 20px; text-decoration: none; z-index: 9999; transition: 0.3s; }
         .top-yt-link:hover { transform: scale(1.1); filter: drop-shadow(0 0 15px #ff004d); }
-        .yt-img { width: 65px; height: 65px; border-radius: 50%; border: 3px solid #ff004d; object-fit: cover; background: #222; display: block; }
-        .yt-status { width: 14px; height: 14px; background: #00ff00; border: 2px solid #080808; border-radius: 50%; position: absolute; bottom: 4px; right: 4px; box-shadow: 0 0 10px #00ff00; }
+        .yt-img { width: 70px; height: 70px; border-radius: 50%; border: 3px solid #ff004d; object-fit: cover; background: #222; }
+        .yt-status { width: 14px; height: 14px; background: #00ff00; border: 2px solid #080808; border-radius: 50%; position: absolute; bottom: 5px; right: 5px; box-shadow: 0 0 10px #00ff00; }
 
-        .card { background: #111; border: 1px solid #222; border-radius: 25px; width: 95%; max-width: 400px; height: 85vh; display: flex; flex-direction: column; padding: 15px; box-shadow: 0 20px 60px rgba(0,0,0,1); position: relative; }
+        .card { background: #111; border: 1px solid #222; border-radius: 25px; width: 95%; max-width: 400px; height: 85vh; display: flex; flex-direction: column; padding: 15px; box-shadow: 0 20px 60px rgba(0,0,0,1); }
         .header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px solid #1a1a1a; margin-bottom: 10px; }
         .logo { font-size: 18px; font-weight: 900; color: #ff004d; text-transform: uppercase; }
         
         #chatBox { flex: 1; overflow-y: auto; background: #050505; border-radius: 18px; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
-        .msg-wrapper { display: flex; align-items: flex-end; gap: 8px; max-width: 85%; animation: fadeIn 0.2s ease; }
+        .msg-wrapper { display: flex; align-items: flex-end; gap: 8px; max-width: 85%; }
         .msg-wrapper.mine { flex-direction: row-reverse; align-self: flex-end; }
+        .avatar, .current-user-av { width: 35px; height: 35px; border-radius: 50%; border: 1.5px solid #ff004d; object-fit: cover; background: #333; flex-shrink: 0; }
         
-        .avatar, .current-user-av { width: 35px; height: 35px; border-radius: 50%; border: 1.5px solid #ff004d !important; object-fit: cover; background: #333; flex-shrink: 0; display: block !important; }
-        
-        .msg { padding: 10px 14px; border-radius: 18px; font-size: 14px; line-height: 1.4; word-wrap: break-word; }
+        .msg { padding: 10px 14px; border-radius: 18px; font-size: 14px; line-height: 1.4; }
         .mine .msg { background: #ff004d; color: white; border-bottom-right-radius: 2px; }
         .others .msg { background: #1a1a1a; color: #eee; border-bottom-left-radius: 2px; border: 1px solid #222; }
         
         .input-area { display: flex; gap: 10px; align-items: center; margin-top: 15px; background: #1a1a1a; padding: 8px 12px; border-radius: 25px; }
-        input { flex: 1; padding: 5px; border: none; background: transparent; color: #fff; outline: none; font-size: 15px; }
-        .file-label { cursor: pointer; font-size: 22px; transition: 0.2s; opacity: 0.8; }
+        input { flex: 1; padding: 5px; border: none; background: transparent; color: #fff; outline: none; }
+        .file-label { cursor: pointer; font-size: 22px; }
         #avatarInput { display: none; }
         .send-btn { background: #ff004d; color: #fff; border: none; border-radius: 50%; width: 35px; height: 35px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
 <body>
 
+    <!-- Ссылка на файл yt.jpg, который лежит в корне -->
     <a href="https://youtube.com" target="_blank" class="top-yt-link">
-        <!-- ТУТ ТВОЙ АНГЕЛОЧЕК (ТЕПЕРЬ ОН ЧАСТЬ КОДА) -->
-        <img src="https://postimg.cc" class="yt-img">
+        <img src="yt.jpg" alt="YT" class="yt-img">
         <div class="yt-status"></div>
     </a>
 
     <div class="card">
         <div class="header">
             <div class="logo">ЧАТ ДЛЯ ВАС!</div>
-            <label class="file-label" title="Выбрать аву">✈️<input type="file" id="avatarInput" accept="image/*"></label>
+            <label class="file-label">✈️<input type="file" id="avatarInput" accept="image/*"></label>
         </div>
         <div id="chatBox"></div>
         <div class="input-area">
             <img id="myCurrentAv" src="https://pravatar.cc" class="current-user-av">
-            <input type="text" id="chatInput" placeholder="Напишите..." autocomplete="off">
-            <button class="send-btn" onclick="send()">➤</button>
+            <input type="text" id="chatInput" placeholder="Напишите...">
+            <button onclick="send()" class="send-btn">➤</button>
         </div>
     </div>
 
@@ -93,25 +91,22 @@
     window.send = function() {
         const input = document.getElementById('chatInput');
         if (!input.value.trim()) return;
-        push(messagesRef, { userId, avatar: userAvatar, text: input.value, timestamp: serverTimestamp() });
+        push(messagesRef, { userId, avatar: userAvatar, text: input.value.trim(), timestamp: serverTimestamp() });
         input.value = "";
     };
-
-    document.getElementById('chatInput').addEventListener('keypress', (e) => { if(e.key === 'Enter') send(); });
 
     onChildAdded(messagesRef, (data) => {
         const msg = data.val();
         const isMine = msg.userId === userId;
-        const wrapper = document.createElement('div');
-        wrapper.className = `msg-wrapper ${isMine ? 'mine' : 'others'}`;
-        wrapper.innerHTML = `<img src="${msg.avatar}" class="avatar"><div class="msg">${msg.text}</div>`;
-        document.getElementById('chatBox').appendChild(wrapper);
+        const div = document.createElement('div');
+        div.className = `msg-wrapper ${isMine ? 'mine' : 'others'}`;
+        div.innerHTML = `<img src="${msg.avatar}" class="avatar"><div class="msg">${msg.text}</div>`;
+        document.getElementById('chatBox').appendChild(div);
         document.getElementById('chatBox').scrollTop = document.getElementById('chatBox').scrollHeight;
     });
 </script>
 </body>
 </html>
-
 
 
 
