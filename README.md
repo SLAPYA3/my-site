@@ -6,23 +6,38 @@
     <title>Чат для Вас!</title>
     <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { background: #080808; color: #fff; font-family: -apple-system, system-ui, sans-serif; margin: 0; padding: 10px; overflow: hidden; height: 100vh; display: flex; align-items: center; justify-content: center; }
+        body { background: #080808; color: #fff; font-family: -apple-system, system-ui, sans-serif; margin: 0; padding: 10px; overflow: hidden; height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; }
         
-        .card { background: #111; border: 1px solid #222; border-radius: 20px; width: 100%; max-width: 450px; height: 90vh; display: flex; flex-direction: column; padding: 15px; box-shadow: 0 15px 50px rgba(0,0,0,0.9); position: relative; }
+        /* Ссылка на YouTube в самом углу экрана */
+        .top-yt-link { 
+            position: absolute; 
+            top: 20px; 
+            right: 20px; 
+            text-decoration: none; 
+            z-index: 100; 
+            transition: 0.3s;
+        }
+        .top-yt-link:hover { transform: scale(1.1); filter: drop-shadow(0 0 10px #ff004d); }
+        .yt-img { 
+            width: 60px; height: 60px; /* Сделал покрупнее */
+            border-radius: 50%; 
+            border: 2px solid #ff004d; 
+            object-fit: cover; 
+        }
+        .yt-status { 
+            width: 14px; height: 14px; 
+            background: #00ff00; 
+            border: 2px solid #080808; 
+            border-radius: 50%; 
+            position: absolute; 
+            bottom: 5px; 
+            right: 5px; 
+        }
+
+        .card { background: #111; border: 1px solid #222; border-radius: 20px; width: 100%; max-width: 450px; height: 85vh; display: flex; flex-direction: column; padding: 15px; box-shadow: 0 15px 50px rgba(0,0,0,0.9); z-index: 1; }
         
         .header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 15px; border-bottom: 1px solid #1a1a1a; margin-bottom: 10px; }
         .logo { font-size: 18px; font-weight: 800; color: #ff004d; letter-spacing: 0.5px; }
-        
-        .nav-icons { display: flex; gap: 12px; align-items: center; }
-        
-        /* Кнопка-аватарка с твоей картинкой */
-        .yt-link { text-decoration: none; transition: 0.3s; display: flex; align-items: center; justify-content: center; position: relative; }
-        .yt-link:hover { transform: scale(1.15); }
-        .yt-img { 
-            width: 40px; height: 40px; border-radius: 50%; border: 2px solid #ff004d; object-fit: cover; 
-            box-shadow: 0 0 15px rgba(255, 0, 77, 0.3); 
-        }
-        .yt-status { width: 10px; height: 10px; background: #00ff00; border: 2px solid #111; border-radius: 50%; position: absolute; bottom: 0; right: 0; }
         
         #chatBox { flex: 1; overflow-y: auto; background: #050505; border-radius: 15px; padding: 12px; display: flex; flex-direction: column; gap: 10px; scroll-behavior: smooth; }
         #chatBox::-webkit-scrollbar { width: 4px; }
@@ -54,19 +69,18 @@
 </head>
 <body>
 
+    <!-- Ссылка теперь тут, в углу экрана -->
+    <a href="https://youtube.com" target="_blank" class="top-yt-link" title="Мой канал">
+        <img src="https://ibb.co" onerror="this.src='https://pravatar.cc'" class="yt-img">
+        <div class="yt-status"></div>
+    </a>
+
     <div class="card">
         <div class="header">
             <div class="logo">ЧАТ ДЛЯ ВАС!</div>
-            <div class="nav-icons">
-                <a href="https://youtube.com" target="_blank" class="yt-link" title="Мой канал">
-                    <!-- Твоя картинка закодирована в Base64 -->
-                    <img src="https://ibb.co" onerror="this.src='https://pravatar.cc'" class="yt-img">
-                    <div class="yt-status"></div>
-                </a>
-                <label class="file-label" title="Изменить свою аватарку">
-                    📸 <input type="file" id="avatarInput" accept="image/*">
-                </label>
-            </div>
+            <label class="file-label" title="Изменить аватарку">
+                📸 <input type="file" id="avatarInput" accept="image/*">
+            </label>
         </div>
         
         <div id="chatBox"></div>
@@ -88,13 +102,12 @@
 
     const userId = localStorage.getItem('userId') || Math.random().toString(36).substring(7);
     localStorage.setItem('userId', userId);
-
     let userAvatar = localStorage.getItem('userAvatar') || 'https://pravatar.cc';
 
     document.getElementById('chatInput').addEventListener('keypress', (e) => { if(e.key === 'Enter') send(); });
 
     document.getElementById('avatarInput').addEventListener('change', function(e) {
-        const file = e.target.files;
+        const file = e.target.files[0];
         if (!file) return;
         const reader = new FileReader();
         reader.onload = function(event) {
@@ -141,6 +154,7 @@
 </script>
 </body>
 </html>
+
 
 
 
