@@ -1,1 +1,178 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SLAPYA - HUB</title>
+    <style>
+        :root { --neon: #ff004d; }
+        * { box-sizing: border-box; cursor: none; } /* Скрываем обычную мышь */
+
+        body {
+            background: #000;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 5px solid var(--neon);
+            box-shadow: inset 0 0 30px var(--neon), 0 0 30px var(--neon);
+            font-family: sans-serif;
+        }
+
+        /* КУРСОР-АНГЕЛОЧЕК */
+        #custom-cursor {
+            width: 40px;
+            height: 40px;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            background: url('yt.jpg') center/cover;
+            border-radius: 50%;
+            border: 2px solid var(--neon);
+            box-shadow: 0 0 15px var(--neon);
+            transform: translate(-50%, -50%);
+            transition: transform 0.1s ease-out;
+        }
+
+        .main-container {
+            text-align: center;
+            z-index: 10;
+        }
+
+        .avatar-main {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid var(--neon);
+            box-shadow: 0 0 25px var(--neon);
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            color: #fff;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px var(--neon);
+            margin-bottom: 30px;
+        }
+
+        .links-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 280px;
+            padding: 12px;
+            background: rgba(255, 0, 77, 0.1);
+            border: 2px solid var(--neon);
+            border-radius: 50px;
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+            transition: 0.3s;
+            box-shadow: 0 0 10px rgba(255, 0, 77, 0.3);
+        }
+
+        .btn:hover {
+            background: var(--neon);
+            box-shadow: 0 0 30px var(--neon);
+            transform: scale(1.05);
+        }
+
+        .btn img {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            margin-right: 15px;
+        }
+
+        #music-status {
+            position: absolute;
+            bottom: 20px;
+            color: var(--neon);
+            font-size: 12px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="custom-cursor"></div>
+
+    <div class="main-container">
+        <img src="yt.jpg" class="avatar-main">
+        <h1>SLAPYA</h1>
+
+        <div class="links-wrap">
+            <a href="https://youtube.com" target="_blank" class="btn">
+                <img src="yt.jpg"> YOUTUBE
+            </a>
+            <a href="https://t.me" target="_blank" class="btn">
+                <img src="tg.jpg"> TELEGRAM
+            </a>
+            <a href="https://tiktok.com" target="_blank" class="btn">
+                <img src="tiktok.jpg"> TIKTOK
+            </a>
+        </div>
+
+        <div id="music-status">Нажми, чтобы включить звук</div>
+    </div>
+
+    <audio id="track" src="music.mp3" loop></audio>
+
+    <script>
+        const cursor = document.getElementById('custom-cursor');
+        const track = document.getElementById('track');
+        const status = document.getElementById('music-status');
+
+        // Движение ангелочка за мышкой
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+
+        // Запуск музыки и пульсации
+        document.body.onclick = () => {
+            if (track.paused) {
+                track.play();
+                status.innerText = "Music is pumping";
+                initVisualizer();
+            }
+        };
+
+        function initVisualizer() {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const source = audioContext.createMediaElementSource(track);
+            const analyser = audioContext.createAnalyser();
+            source.connect(analyser);
+            analyser.connect(audioContext.destination);
+            analyser.fftSize = 64;
+            const bufferLength = analyser.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+
+            function animate() {
+                analyser.getByteFrequencyData(dataArray);
+                let average = dataArray.reduce((a, b) => a + b) / bufferLength;
+                
+                // Пульсация неона
+                let glow = 10 + (average / 3);
+                document.body.style.boxShadow = `inset 0 0 ${glow*2}px var(--neon), 0 0 ${glow*2}px var(--neon)`;
+                document.body.style.borderWidth = `${4 + glow/10}px`;
+                
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+    </script>
+</body>
+</html>
 
