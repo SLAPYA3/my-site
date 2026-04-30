@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Чат для Вас!</title>
     
-    <!-- ИСПРАВЛЕННЫЕ ПОДКЛЮЧЕНИЯ FIREBASE (ТЕПЕРЬ ВСЁ ЗАГРУЗИТСЯ) -->
+    <!-- ПОДКЛЮЧЕНИЕ БИБЛИОТЕК (БЕЗ НИХ НЕ РАБОТАЕТ) -->
     <script src="https://gstatic.com"></script>
     <script src="https://gstatic.com"></script>
     <script src="https://gstatic.com"></script>
@@ -14,35 +14,40 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { background: #080808; color: #fff; font-family: sans-serif; margin: 0; padding: 0; overflow: hidden; height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; }
         
-        .top-yt-link { position: absolute; top: 20px; right: 20px; text-decoration: none; z-index: 9999; transition: 0.3s; }
-        .yt-img { width: 60px; height: 60px; border-radius: 50%; border: 2px solid #ff004d; object-fit: cover; background: #222; }
+        .top-yt-link { position: absolute; top: 20px; right: 20px; text-decoration: none; z-index: 9999; }
+        .yt-img { width: 60px; height: 60px; border-radius: 50%; border: 2px solid #ff004d; object-fit: cover; background: #222; box-shadow: 0 0 15px rgba(255, 0, 77, 0.4); }
 
         .card { background: #111; border: 1px solid #222; border-radius: 25px; width: 95%; max-width: 420px; height: 85vh; display: flex; flex-direction: column; padding: 15px; box-shadow: 0 20px 60px rgba(0,0,0,1); }
         .header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px solid #1a1a1a; margin-bottom: 10px; }
-        .logo { font-size: 18px; font-weight: 900; color: #ff004d; text-transform: uppercase; }
+        .logo { font-size: 16px; font-weight: 900; color: #ff004d; text-transform: uppercase; letter-spacing: 1px; }
         
         #status-dot { width: 10px; height: 10px; background: red; border-radius: 50%; display: inline-block; margin-right: 5px; box-shadow: 0 0 5px red; transition: 0.5s; }
 
-        #chatBox { flex: 1; overflow-y: auto; background: #050505; border-radius: 18px; padding: 12px; display: flex; flex-direction: column; gap: 10px; scroll-behavior: smooth; }
-        .msg-wrapper { display: flex; align-items: flex-end; gap: 8px; max-width: 85%; }
-        .msg-wrapper.mine { flex-direction: row-reverse; align-self: flex-end; }
+        #chatBox { flex: 1; overflow-y: auto; background: #050505; border-radius: 18px; padding: 12px; display: flex; flex-direction: column; gap: 12px; scroll-behavior: smooth; }
         
-        .avatar, .current-user-av { width: 35px; height: 35px; border-radius: 50%; border: 1.5px solid #ff004d; object-fit: cover; background: #333; flex-shrink: 0; }
+        .msg-wrapper { display: flex; align-items: flex-end; gap: 8px; max-width: 85%; animation: fadeIn 0.3s ease; }
+        .msg-wrapper.mine { flex-direction: row-reverse; align-self: flex-end; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .avatar { width: 32px; height: 32px; border-radius: 50%; border: 1.5px solid #ff004d; object-fit: cover; background: #333; flex-shrink: 0; }
         .msg { padding: 10px 14px; border-radius: 18px; font-size: 14px; line-height: 1.4; word-wrap: break-word; }
         .mine .msg { background: #ff004d; color: white; border-bottom-right-radius: 2px; }
         .others .msg { background: #1a1a1a; color: #eee; border-bottom-left-radius: 2px; border: 1px solid #222; }
         
+        .time { font-size: 9px; opacity: 0.5; margin-top: 4px; display: block; text-align: right; }
+
         .input-area { display: flex; gap: 10px; align-items: center; margin-top: 15px; background: #1a1a1a; padding: 8px 12px; border-radius: 25px; }
-        input { flex: 1; padding: 5px; border: none; background: transparent; color: #fff; outline: none; font-size: 15px; }
-        .file-label { cursor: pointer; font-size: 22px; }
+        #chatInput { flex: 1; padding: 5px; border: none; background: transparent; color: #fff; outline: none; font-size: 15px; }
+        .file-label { cursor: pointer; font-size: 20px; }
         #avatarInput { display: none; }
-        .send-btn { background: #ff004d; color: #fff; border: none; border-radius: 50%; width: 35px; height: 35px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .send-btn { background: #ff004d; color: #fff; border: none; border-radius: 50%; width: 38px; height: 38px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; }
     </style>
 </head>
 <body>
 
+    <!-- ССЫЛКА НА ТВОЙ ЮТУБ И ТВОЯ КАРТИНКА yt.jpg -->
     <a href="https://youtube.com" target="_blank" class="top-yt-link">
-        <img src="https://pravatar.cc" class="yt-img">
+        <img src="yt.jpg" onerror="this.src='https://pravatar.cc'" class="yt-img" title="Мой канал">
     </a>
 
     <div class="card">
@@ -51,18 +56,18 @@
                 <div id="status-dot"></div>
                 <span class="logo">ЧАТ ДЛЯ ВАС!</span>
             </div>
-            <label class="file-label">✈️<input type="file" id="avatarInput" accept="image/*"></label>
+            <label class="file-label">📸<input type="file" id="avatarInput" accept="image/*"></label>
         </div>
         <div id="chatBox"></div>
         <div class="input-area">
-            <img id="myCurrentAv" src="https://pravatar.cc" class="current-user-av">
-            <input type="text" id="chatInput" placeholder="Напишите...">
+            <img id="myCurrentAv" src="https://pravatar.cc" style="width:30px;height:30px;border-radius:50%;object-fit:cover;">
+            <input type="text" id="chatInput" placeholder="Напишите сообщение...">
             <button class="send-btn" id="sendBtn">➤</button>
         </div>
     </div>
 
 <script>
-    // КОНФИГ С ТВОИМИ ДАННЫМИ
+    // КОНФИГ С ПОЛНЫМИ АДРЕСАМИ
     const firebaseConfig = {
         apiKey: "AIzaSyBCuF9Eeu4Imh8kzHto2rNor-P_bgjpeWU",
         authDomain: "://firebaseapp.com",
@@ -73,56 +78,38 @@
         appId: "1:136766849891:web:deba1aac85e51e6e4894f6"
     };
 
-    // Инициализация
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
     const auth = firebase.auth();
     const messagesRef = db.ref('messages');
 
-    // АНОНИМНЫЙ ВХОД
-    auth.signInAnonymously()
-        .then(() => console.log("Успешный вход!"))
-        .catch(err => console.error("Ошибка входа:", err.message));
+    // Авторизация
+    auth.signInAnonymously().catch(e => console.log("Вход..."));
 
-    // Проверка соединения
+    // Индикатор сети
     db.ref(".info/connected").on("value", (snap) => {
         const dot = document.getElementById('status-dot');
-        if (snap.val() === true) {
-            dot.style.background = "lime";
-            dot.style.boxShadow = "0 0 10px lime";
-        } else {
-            dot.style.background = "red";
-            dot.style.boxShadow = "0 0 10px red";
-        }
+        dot.style.background = snap.val() ? "lime" : "red";
+        dot.style.boxShadow = snap.val() ? "0 0 10px lime" : "0 0 10px red";
     });
 
-    const userId = localStorage.getItem('userId') || 'u' + Math.random().toString(36).substr(2, 9);
-    localStorage.setItem('userId', userId);
-    
-    let userAvatar = localStorage.getItem('userAvatar') || 'https://pravatar.cc';
+    let userId = localStorage.getItem('chat_uid') || 'u' + Math.random().toString(36).substr(2, 5);
+    localStorage.setItem('chat_uid', userId);
+    let userAvatar = localStorage.getItem('chat_av') || 'https://pravatar.cc?u=' + userId;
     document.getElementById('myCurrentAv').src = userAvatar;
 
-    // Смена авы
     document.getElementById('avatarInput').onchange = function(e) {
         const file = e.target.files[0];
         if (!file) return;
         const reader = new FileReader();
         reader.onload = (ev) => {
-            const img = new Image();
-            img.src = ev.target.result;
-            img.onload = () => {
-                const canvas = document.createElement('canvas');
-                canvas.width = 70; canvas.height = 70;
-                canvas.getContext('2d').drawImage(img, 0, 0, 70, 70);
-                userAvatar = canvas.toDataURL('image/jpeg', 0.5);
-                localStorage.setItem('userAvatar', userAvatar);
-                document.getElementById('myCurrentAv').src = userAvatar;
-            };
+            userAvatar = ev.target.result;
+            localStorage.setItem('chat_av', userAvatar);
+            document.getElementById('myCurrentAv').src = userAvatar;
         };
         reader.readAsDataURL(file);
     };
 
-    // Функция отправки
     function send() {
         const input = document.getElementById('chatInput');
         const text = input.value.trim();
@@ -133,24 +120,27 @@
             a: userAvatar,
             t: text,
             ts: firebase.database.ServerValue.TIMESTAMP
-        }).then(() => {
-            input.value = "";
-        }).catch(err => {
-            console.error(err);
-            alert("ОШИБКА: Проверь Rules в консоли Firebase!");
-        });
+        }).then(() => { input.value = ""; });
     }
 
     document.getElementById('sendBtn').onclick = send;
     document.getElementById('chatInput').onkeypress = (e) => { if(e.key === 'Enter') send(); };
 
-    // Загрузка сообщений
-    messagesRef.limitToLast(50).on('child_added', (snap) => {
+    messagesRef.limitToLast(40).on('child_added', (snap) => {
         const m = snap.val();
         const isMine = m.u === userId;
+        const time = m.ts ? new Date(m.ts).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
+        
         const wrap = document.createElement('div');
         wrap.className = 'msg-wrapper ' + (isMine ? 'mine' : 'others');
-        wrap.innerHTML = `<img src="${m.a}" class="avatar"><div class="msg">${m.t}</div>`;
+        wrap.innerHTML = `
+            <img src="${m.a}" class="avatar">
+            <div class="msg">
+                ${m.t}
+                <span class="time">${time}</span>
+            </div>
+        `;
+        
         const box = document.getElementById('chatBox');
         box.appendChild(wrap);
         box.scrollTop = box.scrollHeight;
@@ -158,6 +148,7 @@
 </script>
 </body>
 </html>
+
 
 
 
