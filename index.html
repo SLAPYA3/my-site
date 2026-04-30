@@ -7,23 +7,35 @@
     <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { background: #080808; color: #fff; font-family: sans-serif; margin: 0; padding: 0; overflow: hidden; height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; }
-        .top-yt-link { position: absolute; top: 15px; right: 15px; z-index: 9999; }
-        .yt-img { width: 55px; height: 55px; border-radius: 50%; border: 2px solid #ff004d; object-fit: cover; }
-        .card { background: #111; border: 1px solid #222; border-radius: 20px; width: 95%; max-width: 400px; height: 85vh; display: flex; flex-direction: column; padding: 15px; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid #222; padding-bottom: 10px; }
-        .logo { font-size: 18px; font-weight: bold; color: #ff004d; }
-        #chatBox { flex: 1; overflow-y: auto; background: #050505; border-radius: 15px; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
-        .msg-wrapper { display: flex; align-items: flex-end; gap: 8px; max-width: 85%; }
+        
+        /* ЮТУБ-АНГЕЛОЧЕК В УГЛУ */
+        .top-yt-link { position: absolute; top: 20px; right: 20px; text-decoration: none; z-index: 9999; transition: 0.3s; }
+        .top-yt-link:hover { transform: scale(1.1); filter: drop-shadow(0 0 15px #ff004d); }
+        .yt-img { width: 65px; height: 65px; border-radius: 50%; border: 3px solid #ff004d; object-fit: cover; background: #222; }
+
+        .card { background: #111; border: 1px solid #222; border-radius: 25px; width: 95%; max-width: 420px; height: 85vh; display: flex; flex-direction: column; padding: 15px; box-shadow: 0 20px 60px rgba(0,0,0,1); position: relative; z-index: 10; }
+        .header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px solid #1a1a1a; margin-bottom: 10px; }
+        .logo { font-size: 18px; font-weight: 900; color: #ff004d; text-transform: uppercase; }
+        
+        #chatBox { flex: 1; overflow-y: auto; background: #050505; border-radius: 18px; padding: 12px; display: flex; flex-direction: column; gap: 10px; scroll-behavior: smooth; }
+        #chatBox::-webkit-scrollbar { width: 4px; }
+        #chatBox::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+
+        .msg-wrapper { display: flex; align-items: flex-end; gap: 8px; max-width: 85%; animation: fadeIn 0.2s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
         .msg-wrapper.mine { flex-direction: row-reverse; align-self: flex-end; }
-        .avatar, .current-user-av { width: 32px; height: 32px; border-radius: 50%; border: 1px solid #ff004d; object-fit: cover; background: #222; }
-        .msg { padding: 8px 12px; border-radius: 15px; font-size: 14px; line-height: 1.4; word-wrap: break-word; }
-        .mine .msg { background: #ff004d; color: #fff; border-bottom-right-radius: 2px; }
-        .others .msg { background: #222; color: #eee; border-bottom-left-radius: 2px; }
-        .input-area { display: flex; gap: 8px; align-items: center; margin-top: 10px; background: #1a1a1a; padding: 8px; border-radius: 20px; }
-        input { flex: 1; padding: 5px; border: none; background: transparent; color: #fff; outline: none; }
-        .file-label { cursor: pointer; font-size: 20px; }
+        
+        .avatar, .current-user-av { width: 35px; height: 35px; border-radius: 50%; border: 1.5px solid #ff004d !important; object-fit: cover; background: #333; flex-shrink: 0; display: block; }
+        
+        .msg { padding: 10px 14px; border-radius: 18px; font-size: 14px; line-height: 1.4; word-wrap: break-word; }
+        .mine .msg { background: #ff004d; color: white; border-bottom-right-radius: 2px; }
+        .others .msg { background: #1a1a1a; color: #eee; border-bottom-left-radius: 2px; border: 1px solid #222; }
+        
+        .input-area { display: flex; gap: 10px; align-items: center; margin-top: 15px; background: #1a1a1a; padding: 8px 12px; border-radius: 25px; }
+        input { flex: 1; padding: 5px; border: none; background: transparent; color: #fff; outline: none; font-size: 15px; }
+        .file-label { cursor: pointer; font-size: 22px; transition: 0.2s; opacity: 0.8; }
         #avatarInput { display: none; }
-        .send-btn { background: #ff004d; color: #fff; border: none; border-radius: 50%; width: 35px; height: 35px; cursor: pointer; font-weight: bold; }
+        .send-btn { background: #ff004d; color: #fff; border: none; border-radius: 50%; width: 35px; height: 35px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
 <body>
@@ -40,8 +52,8 @@
         <div id="chatBox"></div>
         <div class="input-area">
             <img id="myCurrentAv" src="https://pravatar.cc" class="current-user-av">
-            <input type="text" id="chatInput" placeholder="Пиши тут...">
-            <button id="sendBtn" class="send-btn">➤</button>
+            <input type="text" id="chatInput" placeholder="Напишите..." autocomplete="off">
+            <button class="send-btn" id="sendBtn">➤</button>
         </div>
     </div>
 
@@ -49,7 +61,8 @@
     import { initializeApp } from "https://gstatic.com";
     import { getDatabase, ref, push, onChildAdded, serverTimestamp } from "https://gstatic.com";
 
-    const firebaseConfig = { databaseURL: "https://firebaseio.com" };
+    // ТВОЯ БАЗА
+    const firebaseConfig = { databaseURL: "https://slapya-tv-default-rtdb.firebaseio.com/" };
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
     const messagesRef = ref(db, 'messages');
@@ -60,51 +73,60 @@
     let userAvatar = localStorage.getItem('userAvatar') || 'https://pravatar.cc';
     document.getElementById('myCurrentAv').src = userAvatar;
 
-    document.getElementById('avatarInput').onchange = (e) => {
+    // СЖАТИЕ И УСТАНОВКА АВАТАРКИ
+    document.getElementById('avatarInput').addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (!file) return;
         const reader = new FileReader();
-        reader.onload = (ev) => {
+        reader.onload = (event) => {
             const img = new Image();
-            img.src = ev.target.result;
             img.onload = () => {
                 const canvas = document.createElement('canvas');
-                canvas.width = 64; canvas.height = 64; // Мини-размер
-                canvas.getContext('2d').drawImage(img, 0, 0, 64, 64);
-                userAvatar = canvas.toDataURL('image/jpeg', 0.4);
+                canvas.width = 100; canvas.height = 100;
+                canvas.getContext('2d').drawImage(img, 0, 0, 100, 100);
+                userAvatar = canvas.toDataURL('image/jpeg', 0.7);
                 localStorage.setItem('userAvatar', userAvatar);
                 document.getElementById('myCurrentAv').src = userAvatar;
             };
+            img.src = event.target.result;
         };
         reader.readAsDataURL(file);
-    };
+    });
 
-    const sendMsg = () => {
+    // ФУНКЦИЯ ОТПРАВКИ
+    window.sendMsg = function() {
         const input = document.getElementById('chatInput');
         const text = input.value.trim();
         if (!text) return;
-
-        push(messagesRef, { userId, avatar: userAvatar, text, time: Date.now() })
-        .then(() => { input.value = ""; })
-        .catch(err => { alert("Ошибка! Проверь интернет или базу."); });
-    };
+        
+        push(messagesRef, { 
+            userId: userId, 
+            avatar: userAvatar, 
+            text: text, 
+            timestamp: serverTimestamp() 
+        }).then(() => {
+            input.value = "";
+        }).catch(err => alert("Ошибка! Проверь интернет или Rules в Firebase."));
+    }
 
     document.getElementById('sendBtn').onclick = sendMsg;
-    document.getElementById('chatInput').onkeydown = (e) => { if(e.key === 'Enter') sendMsg(); };
+    document.getElementById('chatInput').onkeypress = (e) => { if(e.key === 'Enter') sendMsg(); };
 
+    // ЗАГРУЗКА СООБЩЕНИЙ
     onChildAdded(messagesRef, (data) => {
         const msg = data.val();
         const isMine = msg.userId === userId;
-        const div = document.createElement('div');
-        div.className = `msg-wrapper ${isMine ? 'mine' : 'others'}`;
-        div.innerHTML = `<img src="${msg.avatar}" class="avatar"><div class="msg">${msg.text}</div>`;
+        const wrapper = document.createElement('div');
+        wrapper.className = `msg-wrapper ${isMine ? 'mine' : 'others'}`;
+        wrapper.innerHTML = `<img src="${msg.avatar}" class="avatar"><div class="msg">${msg.text}</div>`;
         const box = document.getElementById('chatBox');
-        box.appendChild(div);
+        box.appendChild(wrapper);
         box.scrollTop = box.scrollHeight;
     });
 </script>
 </body>
 </html>
+
 
 
 
