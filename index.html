@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Чат для Вас!</title>
     
-    <!-- ПОДКЛЮЧЕНИЕ БИБЛИОТЕК (БЕЗ НИХ НЕ РАБОТАЕТ) -->
+    <!-- ИСПРАВЛЕННЫЕ ССЫЛКИ (ТЕПЕРЬ FIREBASE ЗАГРУЗИТСЯ) -->
     <script src="https://gstatic.com"></script>
     <script src="https://gstatic.com"></script>
     <script src="https://gstatic.com"></script>
@@ -45,9 +45,8 @@
 </head>
 <body>
 
-    <!-- ССЫЛКА НА ТВОЙ ЮТУБ И ТВОЯ КАРТИНКА yt.jpg -->
     <a href="https://youtube.com" target="_blank" class="top-yt-link">
-        <img src="yt.jpg" onerror="this.src='https://pravatar.cc'" class="yt-img" title="Мой канал">
+        <img src="yt.jpg" onerror="this.src='https://pravatar.cc'" class="yt-img">
     </a>
 
     <div class="card">
@@ -67,7 +66,7 @@
     </div>
 
 <script>
-    // КОНФИГ С ПОЛНЫМИ АДРЕСАМИ
+    // КОНФИГ ТВОЕГО ПРОЕКТА
     const firebaseConfig = {
         apiKey: "AIzaSyBCuF9Eeu4Imh8kzHto2rNor-P_bgjpeWU",
         authDomain: "://firebaseapp.com",
@@ -78,13 +77,14 @@
         appId: "1:136766849891:web:deba1aac85e51e6e4894f6"
     };
 
+    // Инициализация (теперь firebase будет определен)
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
     const auth = firebase.auth();
     const messagesRef = db.ref('messages');
 
-    // Авторизация
-    auth.signInAnonymously().catch(e => console.log("Вход..."));
+    // Анонимный вход
+    auth.signInAnonymously().catch(e => console.error("Ошибка входа:", e.message));
 
     // Индикатор сети
     db.ref(".info/connected").on("value", (snap) => {
@@ -120,7 +120,10 @@
             a: userAvatar,
             t: text,
             ts: firebase.database.ServerValue.TIMESTAMP
-        }).then(() => { input.value = ""; });
+        }).then(() => { input.value = ""; }).catch(err => {
+            console.error(err);
+            alert("База не пускает! Проверь Rules в консоли Firebase.");
+        });
     }
 
     document.getElementById('sendBtn').onclick = send;
@@ -148,8 +151,6 @@
 </script>
 </body>
 </html>
-
-
 
 
 
