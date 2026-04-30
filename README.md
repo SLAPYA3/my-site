@@ -9,11 +9,11 @@
         body { background: #080808; color: #fff; font-family: sans-serif; margin: 0; padding: 0; overflow: hidden; height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; }
         
         /* ЮТУБ-АНГЕЛОЧЕК В УГЛУ */
-        .top-yt-link { position: fixed; top: 20px; right: 20px; text-decoration: none; z-index: 9999; transition: 0.3s; }
+        .top-yt-link { position: absolute; top: 20px; right: 20px; text-decoration: none; z-index: 9999; transition: 0.3s; }
         .top-yt-link:hover { transform: scale(1.1); filter: drop-shadow(0 0 15px #ff004d); }
         .yt-img { width: 65px; height: 65px; border-radius: 50%; border: 3px solid #ff004d; object-fit: cover; background: #222; }
 
-        .card { background: #111; border: 1px solid #222; border-radius: 25px; width: 95%; max-width: 400px; height: 85vh; display: flex; flex-direction: column; padding: 15px; box-shadow: 0 20px 60px rgba(0,0,0,1); position: relative; z-index: 10; }
+        .card { background: #111; border: 1px solid #222; border-radius: 25px; width: 95%; max-width: 400px; height: 85vh; display: flex; flex-direction: column; padding: 15px; box-shadow: 0 20px 60px rgba(0,0,0,1); position: relative; }
         .header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px solid #1a1a1a; margin-bottom: 10px; }
         .logo { font-size: 18px; font-weight: 900; color: #ff004d; text-transform: uppercase; }
         
@@ -29,23 +29,18 @@
         
         .input-area { display: flex; gap: 10px; align-items: center; margin-top: 15px; background: #1a1a1a; padding: 8px 12px; border-radius: 25px; }
         input { flex: 1; padding: 5px; border: none; background: transparent; color: #fff; outline: none; font-size: 15px; }
-        .file-label { cursor: pointer; font-size: 22px; transition: 0.2s; opacity: 0.8; }
+        .file-label { cursor: pointer; font-size: 22px; }
         #avatarInput { display: none; }
         .send-btn { background: #ff004d; color: #fff; border: none; border-radius: 50%; width: 35px; height: 35px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
 <body>
 
-    <!-- Фоновая музыка -->
-    <audio id="bgMusic" loop>
-        <source src="https://luminote.io" type="audio/mpeg">
-    </audio>
-
     <a href="https://youtube.com" target="_blank" class="top-yt-link">
         <img src="yt.jpg" onerror="this.src='https://pravatar.cc'" class="yt-img">
     </a>
 
-    <div class="card" onclick="startMusic()">
+    <div class="card">
         <div class="header">
             <div class="logo">ЧАТ ДЛЯ ВАС!</div>
             <label class="file-label">✈️<input type="file" id="avatarInput" accept="image/*"></label>
@@ -53,8 +48,8 @@
         <div id="chatBox"></div>
         <div class="input-area">
             <img id="myCurrentAv" src="https://pravatar.cc" class="current-user-av">
-            <input type="text" id="chatInput" placeholder="Напишите..." autocomplete="off">
-            <button class="send-btn" id="sendBtn">➤</button>
+            <input type="text" id="chatInput" placeholder="Напишите...">
+            <button id="sendBtn" class="send-btn">➤</button>
         </div>
     </div>
 
@@ -73,19 +68,13 @@
     let userAvatar = localStorage.getItem('userAvatar') || 'https://pravatar.cc';
     document.getElementById('myCurrentAv').src = userAvatar;
 
-    // Функция запуска музыки
-    window.startMusic = function() {
-        const audio = document.getElementById('bgMusic');
-        audio.play().catch(e => console.log("Ждем клика для звука"));
-    }
-
+    // Смена авы
     document.getElementById('avatarInput').addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (!file) return;
         const reader = new FileReader();
-        reader.onload = (event) => {
+        reader.onload = (ev) => {
             const img = new Image();
-            img.src = event.target.result;
             img.onload = () => {
                 const canvas = document.createElement('canvas');
                 canvas.width = 100; canvas.height = 100;
@@ -94,31 +83,42 @@
                 localStorage.setItem('userAvatar', userAvatar);
                 document.getElementById('myCurrentAv').src = userAvatar;
             };
+            img.src = ev.target.result;
         };
         reader.readAsDataURL(file);
     });
 
-    function sendMsg() {
+    // Функция отправки
+    const sendMsg = () => {
         const input = document.getElementById('chatInput');
-        if (!input.value.trim()) return;
-        push(messagesRef, { userId, avatar: userAvatar, text: input.value.trim(), timestamp: serverTimestamp() });
+        const text = input.value.trim();
+        if (!text) return;
+        
+        push(messagesRef, { 
+            userId: userId, 
+            avatar: userAvatar, 
+            text: text, 
+            timestamp: serverTimestamp() 
+        });
         input.value = "";
-    }
+    };
 
-    document.getElementById('sendBtn').onclick = sendMsg;
-    document.getElementById('chatInput').onkeypress = (e) => { if(e.key === 'Enter') sendMsg(); };
+    document.getElementById('sendBtn').addEventListener('click', sendMsg);
+    document.getElementById('chatInput').addEventListener('keypress', (e) => { if(e.key === 'Enter') sendMsg(); });
 
     onChildAdded(messagesRef, (data) => {
         const msg = data.val();
         const isMine = msg.userId === userId;
-        const div = document.createElement('div');
-        div.className = `msg-wrapper ${isMine ? 'mine' : 'others'}`;
-        div.innerHTML = `<img src="${msg.avatar}" class="avatar"><div class="msg">${msg.text}</div>`;
-        document.getElementById('chatBox').appendChild(div);
+        const wrapper = document.createElement('div');
+        wrapper.className = `msg-wrapper ${isMine ? 'mine' : 'others'}`;
+        wrapper.innerHTML = `<img src="${msg.avatar}" class="avatar"><div class="msg">${msg.text}</div>`;
+        document.getElementById('chatBox').appendChild(wrapper);
         document.getElementById('chatBox').scrollTop = document.getElementById('chatBox').scrollHeight;
     });
 </script>
 </body>
 </html>
+
+
 
 
