@@ -8,7 +8,7 @@
     <style>
         :root { --neon: #ff004d; }
         
-        /* СКРЫВАЕМ КУРСОР */
+        /* 1. ПОЛНОЕ СКРЫТИЕ КУРСОРОВ И ЗАПРЕТ ВЫДЕЛЕНИЯ */
         html, body, * { 
             cursor: none !important; 
             -webkit-tap-highlight-color: transparent;
@@ -33,21 +33,23 @@
             position: relative;
         }
 
-        /* ЗАТЕМНЕНИЕ ФОНА (чтобы кнопки было видно) */
+        /* ЗАТЕМНЕНИЕ ФОНА (чтобы контент выделялся) */
         body::before {
             content: '';
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.5); /* 50% темноты */
+            background: rgba(0, 0, 0, 0.5);
             z-index: 1;
         }
 
+        /* КУРСОР-АНГЕЛОЧЕК */
         #custom-cursor {
             width: 45px; height: 45px; position: fixed; pointer-events: none; z-index: 10000;
             background: url('yt.jpg') center/cover; border-radius: 50%; border: 2px solid var(--neon);
             box-shadow: 0 0 15px var(--neon); transform: translate(-50%, -50%); display: none;
         }
 
+        /* ДЫМНЫЙ СЛЕД */
         .smoke-particle {
             position: fixed; pointer-events: none; background: var(--neon); border-radius: 50%;
             filter: blur(12px); opacity: 0.5; z-index: 9999;
@@ -61,7 +63,7 @@
         .links-wrap { display: flex; flex-direction: column; gap: 15px; }
         .btn {
             display: flex; align-items: center; justify-content: center; width: 280px; padding: 14px;
-            background: rgba(0, 0, 0, 0.6); /* Темная кнопка */
+            background: rgba(0, 0, 0, 0.7); 
             border: 2px solid var(--neon); border-radius: 50px;
             color: #fff; text-decoration: none; font-weight: bold; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px;
         }
@@ -84,11 +86,10 @@
         <img src="yt.jpg" class="avatar-main">
         <h1>SLAPYA</h1>
         <div class="links-wrap">
-            <!-- ТВОЙ ЮТУБ -->
+            <!-- ПРЯМАЯ ССЫЛКА НА КАНАЛ -->
             <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" class="btn">
                 <img src="yt.jpg"> YOUTUBE
             </a>
-            <!-- ЗАПАСНЫЕ КНОПКИ (завтра вставим ссылки) -->
             <a href="#" class="btn" style="opacity: 0.6;"><img src="yt.jpg"> TELEGRAM</a>
             <a href="#" class="btn" style="opacity: 0.6;"><img src="yt.jpg"> TIKTOK</a>
         </div>
