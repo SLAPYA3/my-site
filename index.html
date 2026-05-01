@@ -8,7 +8,7 @@
     <style>
         :root { --neon: #ff004d; }
         
-        /* ЗАПРЕТ ВЫДЕЛЕНИЯ И СКРЫТИЕ КУРСОРОВ */
+        /* ПОЛНЫЙ ЗАПРЕТ ВЫДЕЛЕНИЯ И СКРЫТИЕ КУРСОРОВ */
         * { 
             box-sizing: border-box; 
             cursor: none !important; 
@@ -19,7 +19,7 @@
         } 
 
         body {
-            /* ФОНОВАЯ ГИФКА */
+            /* ТВОЯ ГИФКА НА ФОНЕ */
             background: url('back.gif') center center / cover no-repeat #000;
             margin: 0;
             height: 100vh;
@@ -34,7 +34,7 @@
             position: relative;
         }
 
-        /* ЗАТЕМНЕНИЕ ФОНА */
+        /* ЗАТЕМНЕНИЕ */
         body::before {
             content: '';
             position: absolute;
@@ -69,7 +69,7 @@
             color: #fff; text-decoration: none; font-weight: bold; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px;
         }
         .btn:hover { background: var(--neon); box-shadow: 0 0 30px var(--neon); transform: scale(1.05); }
-        .btn img { width: 25px; height: 25px; border-radius: 50%; margin-right: 15px; }
+        .btn img { width: 25px; height: 25px; border-radius: 50%; margin-right: 15px; object-fit: cover; }
 
         #music-toggle {
             position: absolute; bottom: 30px; background: rgba(0, 0, 0, 0.7); border: 1px solid var(--neon);
@@ -87,12 +87,17 @@
         <img src="yt.jpg" class="avatar-main">
         <h1>SLAPYA</h1>
         <div class="links-wrap">
-            <!-- ПРЯМАЯ ССЫЛКА ЧЕРЕЗ ID (ОТКРОЕТ КАНАЛ ВЕЗДЕ) -->
+            <!-- 1. ИСПРАВЛЕННАЯ ССЫЛКА НА ТВОЙ YOUTUBE КАНАЛ -->
             <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" class="btn">
                 <img src="yt.jpg"> YOUTUBE
             </a>
-            <a href="#" class="btn" style="opacity: 0.6;"><img src="yt.jpg"> TELEGRAM</a>
-            <a href="#" class="btn" style="opacity: 0.6;"><img src="yt.jpg"> TIKTOK</a>
+            <!-- 2. КНОПКИ С ТВОИМИ ИКОНКАМИ tg.jpg и tiktok.jpg -->
+            <a href="#" class="btn" style="opacity: 0.8;">
+                <img src="tg.jpg" onerror="this.src='yt.jpg'"> TELEGRAM
+            </a>
+            <a href="#" class="btn" style="opacity: 0.8;">
+                <img src="tiktok.jpg" onerror="this.src='yt.jpg'"> TIKTOK
+            </a>
         </div>
     </div>
 
@@ -104,6 +109,7 @@
         const btn = document.getElementById('music-toggle');
         let smokeIntensity = 1;
 
+        // КУРСОР И ДЫМ
         document.addEventListener('mousemove', (e) => {
             cursor.style.display = 'block';
             cursor.style.left = e.clientX + 'px';
@@ -126,6 +132,7 @@
             setTimeout(() => { p.remove(); }, 700);
         }
 
+        // МУЗЫКА
         btn.addEventListener('click', () => {
             if (track.paused) {
                 track.play();
@@ -161,4 +168,3 @@
     </script>
 </body>
 </html>
-
