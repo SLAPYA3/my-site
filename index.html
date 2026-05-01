@@ -8,7 +8,7 @@
     <style>
         :root { --neon: #ff004d; }
         
-        /* ЗАПРЕТ ВЫДЕЛЕНИЯ И СКРЫТИЕ КУРСОРОВ */
+        /* ПОЛНЫЙ ЗАПРЕТ ВЫДЕЛЕНИЯ И СКРЫТИЕ КУРСОРОВ */
         * { 
             box-sizing: border-box; 
             cursor: none !important; 
@@ -34,7 +34,7 @@
             position: relative;
         }
 
-        /* ЗАТЕМНЕНИЕ */
+        /* ЗАТЕМНЕНИЕ ФОНА */
         body::before {
             content: '';
             position: absolute;
@@ -87,7 +87,7 @@
         <img src="yt.jpg" class="avatar-main">
         <h1>SLAPYA</h1>
         <div class="links-wrap">
-            <!-- ПУЛЕНЕПРОБИВАЕМАЯ ССЫЛКА (РАБОТАЕТ ВЕЗДЕ) -->
+            <!-- ПУЛЕНЕПРОБИВАЕМАЯ ССЫЛКА НА ТВОЙ ЮТУБ -->
             <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" class="btn">
                 <img src="yt.jpg"> YOUTUBE
             </a>
@@ -131,7 +131,7 @@
             setTimeout(() => { p.remove(); }, 700);
         }
 
-        // МУЗЫКА
+        // МУЗЫКА И ПУЛЬСАЦИЯ
         btn.addEventListener('click', () => {
             if (track.paused) {
                 track.play();
@@ -167,5 +167,3 @@
     </script>
 </body>
 </html>
-
-
